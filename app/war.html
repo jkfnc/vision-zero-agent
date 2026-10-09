@@ -99,14 +99,28 @@
   header .right { flex-wrap:nowrap; gap:10px; }
   header .right a, header .right button, header .right span { white-space:nowrap; }
   @media (max-width:1400px) { header .sub { display:none; } }
+  .bell { display:inline-flex; align-items:center; gap:6px; position:relative; }
+  .bell.on { color:var(--acc); border-color:var(--acc); }
+  .n_count { background:var(--bad); color:#fff; border-radius:9px; font-size:11px; padding:0 6px; line-height:17px; }
+  #toasts { position:fixed; top:72px; right:20px; z-index:50; display:flex; flex-direction:column; gap:10px; width:360px; }
+  .toast { background:var(--panel); border:1px solid var(--line); border-left:4px solid var(--bad); border-radius:10px; padding:12px 14px;
+    box-shadow:0 8px 28px rgba(31,30,27,.14); cursor:pointer; animation:t_in .25s ease-out; font-size:13px; }
+  .toast .t_head { display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+  .toast .t_head b { color:var(--bad); }
+  .toast .t_x { margin-left:auto; border:0; background:none; font-size:18px; line-height:1; padding:0 2px; color:var(--mut); cursor:pointer; }
+  .toast .t_body { margin-bottom:4px; color:var(--txt); }
+  @keyframes t_in { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:none; } }
+  .card.pulse { animation:pulse 1.6s ease-out; }
+  @keyframes pulse { 0% { box-shadow:0 0 0 0 rgba(194,65,12,.55); } 100% { box-shadow:0 0 0 14px rgba(194,65,12,0); } }
 </style>
 </head>
 <body>
 <header>
   <h1>Vision <span>Zero</span> Agent · archival film</h1>
   <div class="sub">Finding explosions in 1940s archival film: 51 of 56 found across five public-domain Wikimedia Commons films. Clips go only to Cosmos Reason (never ingested into VSS), and every one was checked by a human.</div>
-  <div class="right"><a href="./">← Safety agent</a><a href="files/demo/">Demo video &amp; slides</a></div>
+  <div class="right"><button id="n_bell" class="bell"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Alerts<span id="n_count" class="n_count" style="display:none">0</span></button><a href="./">← Safety agent</a><a href="files/demo/">Demo video &amp; slides</a></div>
 </header>
+<div id="toasts"></div>
 <main>
   <div class="kpis">
     <div class="kpi"><div class="v" id="k_films">–</div><div class="l">films evaluated (<span id="k_shown">–</span> shown below)</div></div>
@@ -282,37 +296,88 @@ async function init() {
   renderMetrics(); renderFeed();
 }
 const SEG_COLORS = {pending:"#e4e1d6", checking:"#c49a2c", clear:"#7c9a6b", explosion:"#c2410c", error:"#6f6d66"};
-let liveTimer = null, alertsShown = -1;
+let alertsShown = -1, seenAlerts = null, unread = 0, firstPoll = true, audioCtx = null;
+const BASE_TITLE = document.title;
+function chime() {
+  if (!audioCtx) return;
+  const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
+  o.type = "sine"; o.frequency.setValueAtTime(880, t); o.frequency.setValueAtTime(660, t + 0.15);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.2, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+  o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t + 0.42);
+}
+function setUnread(n) {
+  unread = n;
+  document.title = n ? `(${n}) Explosion alert · ${BASE_TITLE}` : BASE_TITLE;
+  $("#n_count").textContent = n; $("#n_count").style.display = n ? "" : "none";
+}
+function toast(a) {
+  const el = document.createElement("div");
+  el.className = "toast";
+  el.innerHTML = `<div class="t_head"><b>Explosion detected</b><span class="muted">${esc(a.film)} · ${esc(a.at)}</span><button class="t_x" title="Dismiss">×</button></div>
+    <div class="t_body">${esc(a.why)}</div><div class="muted">Segment #${a.segment} · click to view</div>`;
+  el.onclick = e => {
+    el.remove();
+    if (e.target.classList.contains("t_x")) return;
+    const card = document.getElementById("alert-" + a.segment);
+    if (card) { card.scrollIntoView({behavior:"smooth", block:"center"}); card.classList.add("pulse"); setTimeout(() => card.classList.remove("pulse"), 1600); }
+  };
+  $("#toasts").prepend(el);
+  while ($("#toasts").children.length > 4) $("#toasts").lastChild.remove();
+  setTimeout(() => el.remove(), 12000);
+}
+function notify(a) {
+  toast(a); chime(); setUnread(unread + 1);
+  if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+    const n = new Notification(`Explosion detected · ${a.film} at ${a.at}`, {body: a.why, tag: "vz-" + a.segment});
+    n.onclick = () => { window.focus(); n.close(); };
+  }
+}
+function enableAlerts() {
+  if (!audioCtx) try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  if ("Notification" in window && Notification.permission === "default") Notification.requestPermission().then(updateBell);
+  updateBell();
+}
+function updateBell() {
+  const p = "Notification" in window ? Notification.permission : "unsupported";
+  $("#n_bell").title = p === "granted" ? "Desktop alerts on" : p === "denied" ? "Desktop alerts blocked in browser settings; on-page alerts still work" : "Click to enable desktop alerts and sound";
+  $("#n_bell").classList.toggle("on", p === "granted" && !!audioCtx);
+}
+document.addEventListener("visibilitychange", () => { if (!document.hidden) setUnread(0); });
 async function pollLive() {
   const d = await (await fetch(BASE + "api/war/live")).json();
+  const keyOf = a => `${d.started_at}:${a.segment}`;
+  if (seenAlerts === null) seenAlerts = new Set(d.alerts.map(keyOf));
+  else for (const a of [...d.alerts].reverse()) if (!seenAlerts.has(keyOf(a))) { seenAlerts.add(keyOf(a)); notify(a); }
   const n = d.segments.length, done = d.segments.filter(s => s.state !== "pending" && s.state !== "checking").length;
   $("#l_stat").textContent = d.error ? `error: ${d.error}` : d.running ? (n ? `live · segment ${done}/${n} · ${d.alerts.length} alert(s)` : "receiving feed and segmenting…")
     : (n ? `finished · ${done}/${n} segments · ${d.alerts.length} alert(s)` : "");
   $("#l_start").disabled = d.running;
-  if (d.film && !liveTimer) $("#l_film").value = d.film;
+  if (d.film && (d.running || firstPoll)) $("#l_film").value = d.film;
+  firstPoll = false;
   $("#l_strip").innerHTML = d.segments.map(s => `<span title="${esc(s.at + " · " + s.state + (s.why ? " · " + s.why : ""))}"
     style="width:22px;height:22px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;background:${SEG_COLORS[s.state] || "#ccc"}">${s.i}</span>`).join("");
   if (d.alerts.length !== alertsShown) {
     alertsShown = d.alerts.length;
-    $("#l_alerts").innerHTML = d.alerts.map(a => `<div class="card flag">
+    $("#l_alerts").innerHTML = d.alerts.map(a => `<div class="card flag" id="alert-${a.segment}">
       <div class="media"><video controls muted playsinline preload="metadata" src="${BASE}${a.clip}"></video><div class="tag">EXPLOSION · ${esc(a.at)}</div></div>
       <div class="body"><div class="row"><b>Segment #${a.segment}</b><span class="pill">${esc(a.film)}</span><span class="pill ${/^(email|webhook) sent/.test(a.delivery) ? "ok" : "unk"}">${esc(a.delivery)}</span></div>
         <div class="why"><b>Cosmos:</b> ${esc(a.why)}</div>
         <details><summary class="muted">Alert email</summary><div class="live"><b>${esc(a.email_subject)}</b>\n\n${esc(a.email_body)}</div></details></div></div>`).join("");
   }
-  if (!d.running && liveTimer) { clearInterval(liveTimer); liveTimer = null; }
 }
 $("#l_start").onclick = async () => {
+  enableAlerts();
   alertsShown = -1;
   const r = await fetch(BASE + "api/war/live/start", {method:"POST", headers:{"Content-Type":"application/json"},
     body: JSON.stringify({film: $("#l_film").value, max_segments: +$("#l_n").value, realtime: $("#l_rt").checked})});
   const d = await r.json();
   if (d.error) { $("#l_stat").textContent = d.error; return; }
-  if (!liveTimer) liveTimer = setInterval(pollLive, 2000);
   pollLive();
 };
 $("#l_stop").onclick = () => fetch(BASE + "api/war/live/stop", {method:"POST"});
-pollLive().then(() => { if ($("#l_start").disabled && !liveTimer) liveTimer = setInterval(pollLive, 2000); });
+$("#n_bell").onclick = () => { enableAlerts(); setUnread(0); $("#livepanel").scrollIntoView({behavior:"smooth"}); };
+updateBell();
+pollLive().finally(() => setInterval(() => pollLive().catch(() => {}), 2500));
 
 init().catch(e => { $("#feed").innerHTML = `<div class="panel">Could not load war data: ${esc(e.message)}</div>`; });
 </script>
