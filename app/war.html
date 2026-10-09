@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <title>Vision Zero Agent · archival film</title>
 <link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root { --bg:#0b0f14; --panel:#121923; --line:#1f2a37; --txt:#e6edf3; --mut:#8b98a8; --acc:#3fb6ff;
@@ -51,6 +53,52 @@
   @keyframes s { to { transform:rotate(360deg); } }
   details pre { white-space:pre-wrap; font-size:12px; color:var(--mut); }
   .attr li { margin:4px 0; font-size:12px; color:var(--mut); }
+  /* warm editorial theme */
+  :root { --bg:#f5f4ee; --panel:#fbfaf6; --line:#e4e1d6; --txt:#1f1e1b; --mut:#6f6d66; --acc:#c96442;
+          --r0:#7c9a6b; --r1:#6a8f58; --r2:#c49a2c; --r3:#d97757; --r4:#c2410c; --r5:#9f1239;
+          --ok:#4f7a3f; --bad:#c2410c; --warn:#c49a2c; --soft:#efede4; --serif:"Source Serif 4","Iowan Old Style","Palatino Linotype",Georgia,serif; }
+  body { background:var(--bg); color:var(--txt); font:14.5px/1.55 "Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; -webkit-font-smoothing:antialiased; }
+  header { background:rgba(245,244,238,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line); padding:16px 28px; }
+  header h1, .panel h2, .kpi .v, h1, h2 { font-family:var(--serif); }
+  header h1 { font-size:22px; font-weight:500; letter-spacing:-.2px; color:var(--txt); }
+  header h1 span { color:var(--acc); }
+  header .sub { color:var(--mut); font-size:12.5px; max-width:760px; }
+  header .right a { color:var(--acc) !important; font-weight:500; text-decoration:none; }
+  main { gap:22px; padding:24px 28px; }
+  .kpi, .panel { background:var(--panel); border:1px solid var(--line); border-radius:14px; box-shadow:0 1px 2px rgba(31,30,27,.04); }
+  .kpi { padding:16px 18px; }
+  .kpi .v { font-size:30px; font-weight:500; color:var(--txt); }
+  .panel { padding:18px; }
+  .panel h2 { font-size:17px; font-weight:500; text-transform:none; letter-spacing:0; color:var(--txt); }
+  select, input[type=text], textarea, button { background:#fff; color:var(--txt); border:1px solid var(--line); border-radius:9px; padding:8px 12px; }
+  select:focus, input[type=text]:focus, textarea:focus { outline:2px solid rgba(201,100,66,.25); border-color:var(--acc); }
+  button:hover:not(:disabled) { background:var(--soft); }
+  button.pri { background:var(--acc); color:#fff; border-color:var(--acc); font-weight:500; }
+  button.pri:hover:not(:disabled) { background:#b5573a; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 1px 3px rgba(31,30,27,.05); transition:box-shadow .15s, transform .15s; }
+  .card:hover { box-shadow:0 6px 18px rgba(31,30,27,.08); transform:translateY(-1px); }
+  .card.selected { outline:2px solid var(--acc); }
+  .card.flag { border-color:var(--bad); box-shadow:0 0 0 1px var(--bad) inset; }
+  .pill { background:var(--soft); border-color:transparent; color:#55534c; font-family:inherit; font-size:11.5px; }
+  .pill.yes { background:#f6e3dc; color:#9a3412; border-color:transparent; }
+  .pill.ok { background:#e3eedc; color:#3f6431; border-color:transparent; }
+  .pill.bad { background:#fbe1d6; color:#9a3412; border-color:transparent; }
+  .pill.unk { background:#f6edcf; color:#7a5b07; border-color:transparent; }
+  .risk { border-radius:7px; }
+  .cam:hover, .cam.sel { background:var(--soft); }
+  .bar { background:#ebe8de; }
+  .report { font-family:var(--serif); font-size:15px; line-height:1.6; }
+  .report th { background:var(--soft); }
+  .hist .h { background:var(--soft); color:var(--txt); }
+  .hist .h b, .evid a, a { color:var(--acc); }
+  .live { background:var(--soft); border-color:var(--line); color:var(--txt); }
+  .media .tag { background:var(--bad); }
+  table.m th, table.m td { border-bottom-color:var(--line); }
+  .spin { border-color:var(--mut); border-top-color:transparent; }
+  header h1 { white-space:nowrap; }
+  header .right { flex-wrap:nowrap; gap:10px; }
+  header .right a, header .right button, header .right span { white-space:nowrap; }
+  @media (max-width:1400px) { header .sub { display:none; } }
 </style>
 </head>
 <body>
