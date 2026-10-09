@@ -8,6 +8,14 @@ Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAS
 
 ![Archival film mode](docs/screenshots/war_ui.png)
 
+## The story
+
+A news desk gets hours of raw footage from cameras in a conflict zone, two or three hours per feed. Somewhere inside are the five seconds that matter: an explosion. Nobody can sit and watch every feed live, and by the time someone scrubs through it, the moment has passed.
+
+Vision Zero Agent watches for them. It cuts each incoming feed into 5 s segments and sends each one to NVIDIA Cosmos Reason as it arrives. When Cosmos sees an explosion, the agent saves the clip and alerts the desk: a pop-up and chime on the page, a desktop notification, and an email or webhook with the clip. On three films it had never seen, every blast raised an alert, with no false alarms in 36 segments; across 222 hand-checked archival clips it found 51 of 56 explosions.
+
+The same agent protects people on everyday cameras: on city streets it flags cars cutting close to pedestrians and cyclists, and on warehouse floors it flags workers stepping into the path of forklifts and robots. Hours of footage, a few seconds that matter, found and checked on the video itself.
+
 ## What it does
 
 | Feature | How |
@@ -19,7 +27,7 @@ Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAS
 | **Warehouse mode** | AGVs, humanoid robots and forklifts vs. workers: `path_conflict`, `human_in_robot_path`, `contact`, `blocked_aisle`. A consistency rule zeroes risk when Cosmos reports no human near a machine. |
 | **Bounding boxes** | Per-frame YOLO11 detections from VSS are drawn over each playing clip: people red in risky clips (green otherwise), vehicles amber, a dashed red line to the nearest person–machine pair. |
 | **Human review loop** | Confirm / dismiss each alert with a note; confirmed incidents rank first and override the model in reports. |
-| **Natural-language watch rules** | “Alert when a forklift comes within 1 m of a worker” → JSON filter compiled by `gpt-oss-120b` on W&B Inference → live alert feed. |
+| **Natural-language watch rules** | “Alert when a forklift comes within 1 m of a worker” → JSON filter compiled by `gpt-oss-120b` on W&B Inference, then run over every scored clip to give a rule-matched alert feed. |
 | **Incident reports** | One click: worst incidents with clip citations, cross-camera patterns, recommended actions. |
 | **Observability** | Every Cosmos and LLM call is a `weave.op`; eval tables (model vs. human verdict) are logged to W&B. |
 

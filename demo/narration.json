@@ -1,7 +1,7 @@
 [
  {
   "id": "01_title",
-  "text": "This is the Vision Zero Agent: one video agent that finds the moments that matter in hours of footage, and checks every one on the video itself."
+  "text": "A news desk gets three hours of raw footage from cameras in a conflict zone. Somewhere inside are five seconds that matter: an explosion. Nobody can sit and watch it all live. The Vision Zero Agent watches it for them."
  },
  {
   "id": "10_war",
@@ -9,11 +9,11 @@
  },
  {
   "id": "10b_live",
-  "text": "It also works live. As film arrives, the agent cuts it into five second segments and checks each one as it lands. On an explosion it saves the clip, pops an alert on the page and sends an email. On three films it had never seen, every blast raised an alert, with no false alarms in thirty six segments. Its misses are the first flash, before the cloud forms."
+  "text": "This is how it works live. As footage arrives, the agent cuts it into five second segments and checks each one as it lands. The moment it sees an explosion, it saves the clip and alerts the news desk on screen and by email. On three films it had never seen, every blast raised an alert, with no false alarms in thirty six segments. Its misses are the first flash, before the cloud forms."
  },
  {
   "id": "02_problem",
-  "text": "The same agent runs on live camera archives. Our archive on VAST holds over three thousand five hundred clips from thirteen cameras: dashcams, a cyclist's helmet camera, street cameras, and two warehouse floors."
+  "text": "The same agent protects people on everyday cameras. Our archive on VAST holds over three thousand five hundred clips from thirteen cameras: street cameras where cars cut close to pedestrians and cyclists, and warehouse floors where workers step into the path of forklifts and robots."
  },
  {
   "id": "03_overview",
