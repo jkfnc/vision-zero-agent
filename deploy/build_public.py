@@ -47,17 +47,20 @@ def build_demo():
                     "-vn", "-b:a", "128k", full], check=True)
     json.dump(items, open(os.path.join(d, "narration.json"), "w"), indent=1)
 
-    rows = "\n".join(f'<li><b>{i["id"]}</b> <audio controls preload="none" src="{i["mp3"]}"></audio>'
+    in_video = open(os.path.join(DEMO, "build_video.py")).read().split("SCENES = {", 1)[1].split("\n}", 1)[0]
+    items = [i for i in items if f'"{i["id"]}":' in in_video]
+    v = int(os.path.getmtime(os.path.join(DEMO, "vision_zero_demo.mp4")))
+    rows = "\n".join(f'<li><b>{i["id"]}</b> <audio controls preload="none" src="{i["mp3"]}?v={v}"></audio>'
                      f'<div class="t">{i["text"]}</div></li>' for i in items)
     html = f"""<!doctype html><meta charset="utf-8"><title>Vision Zero Agent · demo assets</title>
 <style>body{{font:15px/1.5 system-ui,sans-serif;background:#0d1117;color:#e6edf3;max-width:980px;margin:24px auto;padding:0 16px}}
 a{{color:#58a6ff}}video{{width:100%;border-radius:8px;background:#000}}li{{margin:10px 0}}.t{{color:#9da7b3;font-size:13px}}
 audio{{height:30px;vertical-align:middle;margin-left:8px}}</style>
 <h1>Vision Zero Agent · team-4 demo</h1>
-<p><a href="vision_zero_demo.mp4" download>Download video (MP4)</a> ·
-<a href="vision_zero_deck.pdf">Slides (PDF)</a> · <a href="../slides/deck.html">Slides (HTML)</a> ·
-<a href="audio/narration_full.mp3" download>Narration (MP3)</a> · <a href="../../war">War-footage agent</a></p>
-<video controls preload="metadata" src="vision_zero_demo.mp4"></video>
+<p><a href="vision_zero_demo.mp4?v={v}" download>Download video (MP4)</a> ·
+<a href="vision_zero_deck.pdf?v={v}">Slides (PDF)</a> · <a href="../slides/deck.html">Slides (HTML)</a> ·
+<a href="audio/narration_full.mp3?v={v}" download>Narration (MP3)</a> · <a href="../../war">War-footage agent</a></p>
+<video controls preload="metadata" src="vision_zero_demo.mp4?v={v}"></video>
 <h2>Narration by scene</h2><p class="t">Voiced with Piper TTS (en_US-lessac-medium, research/non-commercial voice).</p>
 <ol style="list-style:none;padding:0">{rows}</ol>"""
     open(os.path.join(d, "index.html"), "w").write(html)
