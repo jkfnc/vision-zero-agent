@@ -4,6 +4,8 @@
 
 Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAST AI OS for video, vectors and metadata; NVIDIA Cosmos Reason running on CoreWeave GPUs for video understanding; YOLO11 for object boxes; W&B Inference for reports and rule compiling; W&B Weave for tracing and evals; built with Cursor.
 
+**[Demo video (2:37)](https://github.com/jkfnc/vision-zero-agent/releases/download/v1.0-demo/vision_zero_demo.mp4)** · **[Slides (PDF)](https://github.com/jkfnc/vision-zero-agent/releases/download/v1.0-demo/vision_zero_deck.pdf)**
+
 ![Warehouse feed with detector boxes](docs/screenshots/04_warehouse_boxes.png)
 
 ## What it does
