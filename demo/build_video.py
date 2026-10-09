@@ -19,6 +19,7 @@ CARD_A, CARD_B = (38, 130, 369, 207), (421, 130, 369, 207)
 RULE_A, RULE_B = (38, 108, 369, 207), (421, 108, 369, 207)
 SCENES = {
     "01_title": [("01_title.png", 1, [])],
+    "10_war": [("10_war.png", 0.18, []), ("WAR", 0.82, [])],
     "02_problem": [("02_problem.png", 1, [])],
     "03_overview": [("03_overview.png", 1, [])],
     "04_warehouse": [("04_warehouse_boxes.png", 1, [("wh_forklift_boxes.mp4", *CARD_A), ("wh_police_boxes.mp4", *CARD_B)])],
@@ -28,7 +29,6 @@ SCENES = {
                 ("07_rule_feed.png", 0.55, [("wh_forklift_boxes.mp4", *RULE_A), ("wh_ceiling_boxes.mp4", *RULE_B)])],
     "08_report": [("08_report.png", 0.34, []), ("08_report_b.png", 0.33, []), ("08_report_c.png", 0.33, [])],
     "09_wandb": [("09_wandb.png", 1, [])],
-    "10_war": [("10_war.png", 0.2, []), ("WAR", 0.8, [])],
     "11_stack": [("11_stack.png", 1, [])],
     "12_close": [("12_close.png", 1, [])],
 }
@@ -81,8 +81,9 @@ def write_ass(sid, text, dur, path):
 
 def segment(img, dur, overlays, out, zoom=None):
     if img == "WAR":
-        run(["ffmpeg", "-v", "error", "-y", "-stream_loop", "-1", "-i", WAR, "-t", f"{dur:.3f}",
-             "-vf", "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,fps=30,format=yuv420p",
+        run(["ffmpeg", "-v", "error", "-y", "-i", WAR, "-t", f"{dur:.3f}",
+             "-vf", "setpts=PTS-STARTPTS,scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,"
+                    "fps=30,tpad=stop_mode=clone:stop_duration=30,format=yuv420p",
              "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", out])
         return
     cmd = ["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", "30", "-t", f"{dur:.3f}", "-i", f"{S}/{img}"]

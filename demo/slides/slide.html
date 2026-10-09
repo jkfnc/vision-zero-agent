@@ -18,12 +18,12 @@
 
 <div class="s" id="01_title">
   <h1>Vision <b>Zero</b> Agent</h1>
-  <p class="lead">Finds safety incidents in hours of camera footage, and checks them on the video itself.</p>
+  <p class="lead">One video agent that finds the moments that matter in hours of footage, from archival film to live street and warehouse cameras, and checks every one on the video itself.</p>
   <div class="tag">VAST Builders Challenge · team-4</div>
 </div>
 
 <div class="s" id="02_problem">
-  <h2>Thousands of hours of video. <b>Nobody watches it.</b></h2>
+  <h2>Same agent, <b>live camera archives on VAST</b></h2>
   <div class="grid">
     <div class="box"><h3>3,537 clips · 13 cameras</h3><p>Indexed on VAST: Toronto dashcam, a New York cyclist's helmet camera, NYC and San Francisco street cameras, a highway, a neighborhood camera.</p></div>
     <div class="box"><h3>2 warehouse floors</h3><p>Forklifts, AGVs and humanoid robots sharing space with workers.</p></div>
@@ -36,19 +36,19 @@
   <h2>Measured, not guessed: <b>W&amp;B Weave + evaluation</b></h2>
   <table>
     <tr><th>Check (human frame review = ground truth)</th><th>Result</th></tr>
+    <tr><td>Archival film (5 films, 222 clips): explosions</td><td class="n">51 of 56 found · 85% precision</td></tr>
     <tr><td>Street clips: Cosmos risk vs. reviewer</td><td class="n">8 / 10 agree</td></tr>
     <tr><td>Warehouse clips (after the zero-humans consistency rule)</td><td class="n">6 / 6 agree</td></tr>
-    <tr><td>Archival war film (5 films, 222 clips): explosions</td><td class="n">85% precision · 91% recall</td></tr>
-    <tr><td>Archival war film: bomb release</td><td class="bad">10% precision (12% with stricter prompt)</td></tr>
+    <tr><td>Archival film: bomb release (known limit)</td><td class="bad">10% precision (12% with stricter prompt)</td></tr>
   </table>
   <p class="note">Every Cosmos Reason and LLM call is traced in Weave. Results logged as run "cosmos-reason-frame-checked-eval" in W&amp;B. Reviewed clips are spot checks, not a random sample.</p>
 </div>
 
 <div class="s" id="10_war">
-  <h2>Stress test: <b>public-domain archival war film</b></h2>
+  <h2>Archival film: <b>51 of 56 explosions found</b></h2>
   <div class="grid">
-    <div class="box"><h3>Explosions: reliable</h3><p>85% precision, 91% recall across B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, the 1946 Bikini test and a 1945 bulletin.</p></div>
-    <div class="box"><h3>Bomb release: fooled</h3><p>10% precision. Parachutes, supply bundles and cargo drops are reported as bombs; a stricter prompt only reached 12%.</p></div>
+    <div class="box"><h3>Explosions: 91% recall · 85% precision</h3><p>222 hand-checked five-second clips from five public-domain films: B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, the 1946 Bikini test and a 1945 bulletin.</p></div>
+    <div class="box"><h3>Known limit: bomb release</h3><p>Parachutes, supply bundles and cargo drops look like bombs at this resolution: 12% precision even with a stricter prompt. We show it, not hide it.</p></div>
   </div>
   <p class="note">Films from Wikimedia Commons, public domain. Sent to Cosmos directly for evaluation; not ingested into the VSS archive.</p>
 </div>
@@ -65,7 +65,7 @@
 
 <div class="s" id="12_close">
   <h1>Vision <b>Zero</b> Agent</h1>
-  <p class="lead">Fewer near misses, found before they become accidents.</p>
+  <p class="lead">Any camera, any archive. Every finding checked on the video, and every number measured.</p>
   <div class="tag">Thank you · team-4</div>
 </div>
 

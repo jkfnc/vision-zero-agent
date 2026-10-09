@@ -1,11 +1,15 @@
 [
  {
   "id": "01_title",
-  "text": "This is the Vision Zero Agent. It finds safety incidents in hours of camera footage, and checks them on the video itself."
+  "text": "This is the Vision Zero Agent: one video agent that finds the moments that matter in hours of footage, and checks every one on the video itself."
+ },
+ {
+  "id": "10_war",
+  "text": "We start with the hardest footage: five public domain archival films. NVIDIA Cosmos Reason, on CoreWeave GPUs, watched every five second clip, and we hand checked two hundred twenty two of them. It found fifty one of fifty six real explosions, at eighty five percent precision. Bomb releases are its known limit: parachutes and cargo drops fool it, and we show that too."
  },
  {
   "id": "02_problem",
-  "text": "Cities and warehouses record thousands of hours of video that nobody watches. Our archive on VAST holds over three thousand five hundred clips from thirteen cameras: dashcams, a cyclist's helmet camera, street cameras, and two warehouse floors."
+  "text": "The same agent runs on live camera archives. Our archive on VAST holds over three thousand five hundred clips from thirteen cameras: dashcams, a cyclist's helmet camera, street cameras, and two warehouse floors."
  },
  {
   "id": "03_overview",
@@ -33,11 +37,7 @@
  },
  {
   "id": "09_wandb",
-  "text": "Every Cosmos and language model call is traced in Weights and Biases Weave, and we log a measured evaluation. On human checked clips, Cosmos agreed with reviewers on eight of ten street clips, and six of six warehouse clips."
- },
- {
-  "id": "10_war",
-  "text": "We also stress tested Cosmos on five public domain archival war films, two hundred twenty two hand checked clips. It finds explosions with eighty five percent precision. But bomb releases were mostly false alarms, even with a stricter prompt, because parachutes and cargo drops look alike. Knowing that is exactly why we measure."
+  "text": "Every Cosmos and language model call is traced in Weights and Biases Weave, and every number is measured against human checks: fifty one of fifty six explosions in archival film, eight of ten street clips, and six of six warehouse clips."
  },
  {
   "id": "11_stack",
@@ -45,6 +45,6 @@
  },
  {
   "id": "12_close",
-  "text": "Vision Zero Agent. Fewer near misses, found before they become accidents. Thank you."
+  "text": "Vision Zero Agent. Any camera, any archive, every finding checked on the video. Thank you."
  }
 ]

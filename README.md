@@ -1,17 +1,18 @@
 # Vision Zero Agent
 
-**A video safety agent that watches every camera, scores close calls between people and machines, and writes the incident report — on city streets, on warehouse floors, and (as a stress test) in archival war film.**
+**One video agent that finds the moments that matter in hours of footage and checks every finding on the video itself — 51 of 56 explosions found in public-domain archival film, and close calls between people and vehicles or warehouse robots in a live VAST camera archive.**
 
 Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAST AI OS for video, vectors and metadata; NVIDIA Cosmos Reason running on CoreWeave GPUs for video understanding; YOLO11 for object boxes; W&B Inference for reports and rule compiling; W&B Weave for tracing and evals; built with Cursor.
 
 **[Demo video (2:37)](https://github.com/jkfnc/vision-zero-agent/releases/download/v1.0-demo/vision_zero_demo.mp4)** · **[Slides (PDF)](https://github.com/jkfnc/vision-zero-agent/releases/download/v1.0-demo/vision_zero_deck.pdf)**
 
-![Warehouse feed with detector boxes](docs/screenshots/04_warehouse_boxes.png)
+![Archival film mode](docs/screenshots/war_ui.png)
 
 ## What it does
 
 | Feature | How |
 |---|---|
+| **Archival film mode** (`/war`) | Five public-domain Wikimedia Commons films (1943–1946), every 5 s clip watched by Cosmos Reason, 222 clips hand-checked. Explosions: 51 of 56 found (91 % recall, 85 % precision). Each clip card shows Cosmos's call, the human check, and a live “Run Cosmos now” button. |
 | **Custom-prompt re-index** | We re-indexed street cameras in VSS with our own Cosmos prompt (below) so every caption carries machine-readable `RISK / EVENT / MIN_GAP_M / VULNERABLE / WHY` lines. These become searchable and parseable across ~3,500 clips. |
 | **Video-verified risk scoring** | For clips that matter, the app sends the actual 5 s MP4 to Cosmos Reason with a domain-specific prompt (street or warehouse) and stores the structured score. 346 clips scored this way. |
 | **Warehouse mode** | AGVs, humanoid robots and forklifts vs. workers: `path_conflict`, `human_in_robot_path`, `contact`, `blocked_aisle`. A consistency rule zeroes risk when Cosmos reports no human near a machine. |
@@ -19,19 +20,18 @@ Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAS
 | **Human review loop** | Confirm / dismiss each alert with a note; confirmed incidents rank first and override the model in reports. |
 | **Natural-language watch rules** | “Alert when a forklift comes within 1 m of a worker” → JSON filter compiled by `gpt-oss-120b` on W&B Inference → live alert feed. |
 | **Incident reports** | One click: worst incidents with clip citations, cross-camera patterns, recommended actions. |
-| **Archival war footage test** (`/war`) | Can the same agent find bomb releases and explosions? 5 public-domain Wikimedia Commons films, 222 human-graded clips, a live “Run Cosmos now” button per clip. |
 | **Observability** | Every Cosmos and LLM call is a `weave.op`; eval tables (model vs. human verdict) are logged to W&B. |
 
 ## Results
 
 | Domain | Measure | Result |
 |---|---|---|
+| Archival film: explosions | 222 hand-checked clips, 56 real explosions (prompt v1) | **51 of 56 found: 91 % recall, 85 % precision** (v2: 88 % precision, 80 % recall) |
 | Street (Vision Zero) | agreement with human review (risk ≥ 2 vs. verdict) | 8 / 10 |
 | Warehouse | agreement with human review | 5 / 6 raw → 6 / 6 after the no-human consistency rule |
-| War film: explosions | precision / recall over 222 graded clips (prompt v2) | 88 % / 80 % (v1: 85 % / 91 %) |
-| War film: bomb releases | precision / recall (prompt v2) | 12 % / 67 % — Cosmos confuses parachutes, cargo drops and flak with bombs |
+| Archival film: bomb releases (known limit) | 9 real releases (prompt v2) | 12 % precision / 67 % recall — Cosmos confuses parachutes, cargo drops and flak with bombs |
 
-The war test is an honest negative result for one task: a 5 s clip at low resolution is often not enough to tell a bomb from a parachute, and a stricter prompt barely helped (precision 4.0 % → 4.2 % on the hardest film). Explosions are reliable.
+Explosions are the best-supported number we have (56 real events across 5 films). Bomb releases are an honest negative result: a 5 s clip at low resolution is often not enough to tell a bomb from a parachute, and a stricter prompt barely helped (precision 4.0 % → 4.2 % on the hardest film).
 
 ## Custom prompts
 
