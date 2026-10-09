@@ -10,9 +10,9 @@ Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAS
 
 ## The story
 
-A news desk gets hours of raw footage from cameras in a conflict zone, two or three hours per feed. Somewhere inside are the five seconds that matter: an explosion. Nobody can sit and watch every feed live, and by the time someone scrubs through it, the moment has passed.
+A news desk gets hours of raw footage from remote cameras in conflict zones and disaster areas, two or three hours per feed. Somewhere inside are the five seconds that matter. Nobody can sit and watch every feed live, and by the time someone scrubs through it, the moment has passed.
 
-Vision Zero Agent watches for them. It cuts each incoming feed into 5 s segments and sends each one to NVIDIA Cosmos Reason as it arrives. When Cosmos sees an explosion, the agent saves the clip and alerts the desk: a pop-up and chime on the page, a desktop notification, and an email or webhook with the clip. On three films it had never seen, every blast raised an alert, with no false alarms in 36 segments; across 222 hand-checked archival clips it found 51 of 56 explosions.
+Vision Zero Agent watches for them. It cuts each incoming feed into 5 s segments and sends each one to NVIDIA Cosmos Reason as it arrives. When Cosmos sees the event, the agent saves the clip and alerts the desk: a pop-up and chime on the page, a desktop notification, and an email or webhook with the clip. The event is just a prompt (`app/prompt_bomb.txt`): we built and measured it on explosions, and the same trigger can watch for fires, floods, building collapses or crowd surges by swapping the prompt; those other events are not yet measured. On three films it had never seen, every blast raised an alert, with no false alarms in 36 segments; across 222 hand-checked archival clips it found 51 of 56 explosions.
 
 The same agent protects people on everyday cameras: on city streets it flags cars cutting close to pedestrians and cyclists, and on warehouse floors it flags workers stepping into the path of forklifts and robots. Hours of footage, a few seconds that matter, found and checked on the video itself.
 
