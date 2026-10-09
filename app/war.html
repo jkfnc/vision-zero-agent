@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vision Zero Agent · war footage</title>
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#0b0f14; --panel:#121923; --line:#1f2a37; --txt:#e6edf3; --mut:#8b98a8; --acc:#3fb6ff;
+          --ok:#2f9d5a; --bad:#e04f2c; --warn:#d6a02a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { display:flex; align-items:center; gap:16px; padding:14px 22px; border-bottom:1px solid var(--line); background:#0e141c; position:sticky; top:0; z-index:5; }
+  header h1 { font-size:18px; margin:0; } header h1 span { color:var(--acc); }
+  header .sub { color:var(--mut); font-size:12px; }
+  header .right { margin-left:auto; display:flex; gap:14px; font-size:13px; }
+  a { color:var(--acc); text-decoration:none; } a:hover { text-decoration:underline; }
+  main { padding:18px 22px; display:flex; flex-direction:column; gap:14px; }
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; }
+  .kpi { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .kpi .v { font-size:24px; font-weight:600; } .kpi .l { color:var(--mut); font-size:12px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; }
+  .panel h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--mut); }
+  .top { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:14px; }
+  @media (max-width:1100px) { .top, .kpis { grid-template-columns:1fr; } }
+  .top video { width:100%; border-radius:8px; background:#000; }
+  table.m { border-collapse:collapse; width:100%; font-size:12px; }
+  table.m th, table.m td { border-bottom:1px solid var(--line); padding:5px 6px; text-align:left; }
+  table.m th { color:var(--mut); font-weight:500; }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  select, button { background:#0e151e; color:var(--txt); border:1px solid var(--line); border-radius:7px; padding:7px 10px; font:inherit; cursor:pointer; }
+  button.pri { background:var(--acc); color:#04121c; border-color:var(--acc); font-weight:600; }
+  button:disabled { opacity:.5; cursor:default; }
+  .feed { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+  .card { background:#0e151e; border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+  .card.flag { border-color:var(--bad); box-shadow:0 0 0 1px var(--bad) inset; }
+  .media { position:relative; aspect-ratio:4/3; background:#000; cursor:pointer; }
+  .media img, .media video { width:100%; height:100%; object-fit:contain; display:block; }
+  .media .play { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:34px; color:#fff; opacity:.75; }
+  .media .tag { position:absolute; left:8px; top:8px; background:var(--bad); color:#fff; font-weight:700; font-size:11px; padding:2px 8px; border-radius:5px; }
+  .body { padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+  .row { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+  .pill { font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--mut); font-family:ui-monospace,Menlo,monospace; }
+  .pill.yes { color:#fff; background:#7a2a1c; border-color:#7a2a1c; }
+  .pill.ok { color:#fff; background:var(--ok); border-color:var(--ok); }
+  .pill.bad { color:#fff; background:var(--bad); border-color:var(--bad); }
+  .pill.unk { color:#111; background:var(--warn); border-color:var(--warn); }
+  .why { font-size:13px; } .muted { color:var(--mut); font-size:12px; }
+  .live { font-size:12px; background:#0b1220; border:1px solid var(--line); border-radius:7px; padding:6px 8px; white-space:pre-wrap; font-family:ui-monospace,Menlo,monospace; }
+  .spin { display:inline-block; width:12px; height:12px; border:2px solid var(--mut); border-top-color:transparent; border-radius:50%; animation:s 1s linear infinite; vertical-align:middle; }
+  @keyframes s { to { transform:rotate(360deg); } }
+  details pre { white-space:pre-wrap; font-size:12px; color:var(--mut); }
+  .attr li { margin:4px 0; font-size:12px; color:var(--mut); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vision <span>Zero</span> Agent · war footage</h1>
+  <div class="sub">Can Cosmos Reason spot bomb releases and explosions in archival film? Public-domain Wikimedia Commons films, sent only to Cosmos, never ingested into VSS, and every clip checked by a human.</div>
+  <div class="right"><a href="./">← Safety agent</a><a href="files/demo/">Demo video &amp; slides</a></div>
+</header>
+<main>
+  <div class="kpis">
+    <div class="kpi"><div class="v" id="k_films">–</div><div class="l">films evaluated (<span id="k_shown">–</span> shown below)</div></div>
+    <div class="kpi"><div class="v" id="k_graded">–</div><div class="l">human-graded 5 s clips</div></div>
+    <div class="kpi"><div class="v" id="k_exp">–</div><div class="l">explosions · precision / recall</div></div>
+    <div class="kpi"><div class="v" id="k_rel">–</div><div class="l">bomb releases · precision / recall</div></div>
+    <div class="kpi"><div class="v" id="k_fa">–</div><div class="l">release false alarms (mostly parachutes)</div></div>
+  </div>
+
+  <div class="top">
+    <div class="panel"><h2>Highlight reel</h2>
+      <video controls preload="metadata" src="files/war/war_reel.mp4"></video>
+      <div class="muted">Each caption shows Cosmos's call and the human check. The last clip is a false alarm: supply parachutes.</div>
+    </div>
+    <div class="panel"><h2>Per film · prompt <span id="m_ver">v2</span></h2>
+      <table class="m" id="mtable"></table>
+      <details><summary class="muted">Prompt sent to Cosmos</summary><pre id="prompt"></pre></details>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="filters">
+      <select id="f_film"><option value="">all shown films</option></select>
+      <select id="f_ver"><option value="v2">prompt v2 (stricter)</option><option value="v1">prompt v1</option></select>
+      <select id="f_show">
+        <option value="flagged">Cosmos flagged (release or explosion)</option>
+        <option value="">all graded clips</option>
+        <option value="tp_release">correct bomb releases</option>
+        <option value="fp_release">false alarms: release</option>
+        <option value="fn_release">missed releases</option>
+        <option value="tp_impact">correct explosions</option>
+        <option value="fp_impact">false alarms: explosion</option>
+      </select>
+      <span class="muted" id="count"></span>
+    </div>
+  </div>
+  <div class="feed" id="feed"></div>
+
+  <div class="panel"><h2>Sources &amp; licensing</h2><ul class="attr" id="attr"></ul>
+    <div class="muted">The B-17 (AP watermark) and colorized RAF films count toward the numbers above, but their clips are not shown.</div></div>
+</main>
+<script>
+const BASE = location.pathname.replace(/war\/?$/, "");
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtT = s => `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+const pct = x => x == null ? "–" : Math.round(x*100) + "%";
+let DATA = null;
+
+function agg(ver, films) {
+  const t = {release:{tp:0,fp:0,fn:0}, explosion:{tp:0,fp:0,fn:0}, graded:0};
+  for (const [k, m] of Object.entries(DATA.metrics)) {
+    const [film, v] = k.split(" | ");
+    if (v !== ver || film.toUpperCase() === "ALL" || (films && !films.includes(film))) continue;
+    t.graded += m.graded;
+    for (const kind of ["release","explosion"]) for (const f of ["tp","fp","fn"]) t[kind][f] += m[kind][f];
+  }
+  for (const kind of ["release","explosion"]) {
+    const x = t[kind];
+    x.p = x.tp + x.fp ? x.tp/(x.tp+x.fp) : null; x.r = x.tp + x.fn ? x.tp/(x.tp+x.fn) : null;
+  }
+  return t;
+}
+
+function renderMetrics() {
+  const ver = $("#f_ver").value;
+  $("#m_ver").textContent = ver;
+  const all = agg(ver);
+  const films = new Set(Object.keys(DATA.metrics).map(k => k.split(" | ")[0]).filter(f => f.toUpperCase() !== "ALL"));
+  $("#k_films").textContent = films.size;
+  $("#k_shown").textContent = new Set(DATA.clips.map(c => c.film)).size;
+  $("#k_graded").textContent = all.graded;
+  $("#k_exp").textContent = `${pct(all.explosion.p)} / ${pct(all.explosion.r)}`;
+  $("#k_rel").textContent = `${pct(all.release.p)} / ${pct(all.release.r)}`;
+  $("#k_fa").textContent = all.release.fp;
+  let h = "<tr><th>film</th><th>graded</th><th>explosion P / R</th><th>release P / R</th></tr>";
+  for (const f of films) {
+    const m = DATA.metrics[`${f} | ${ver}`];
+    if (!m) continue;
+    const e = m.explosion, r = m.release;
+    h += `<tr><td>${esc(f)}</td><td>${m.graded}</td><td>${pct(e.precision)} / ${pct(e.recall)}</td><td>${pct(r.precision)} / ${pct(r.recall)}</td></tr>`;
+  }
+  const a = agg(ver);
+  h += `<tr><th>all</th><th>${a.graded}</th><th>${pct(a.explosion.p)} / ${pct(a.explosion.r)}</th><th>${pct(a.release.p)} / ${pct(a.release.r)}</th></tr>`;
+  $("#mtable").innerHTML = h;
+}
+
+function verdict(c, ver) {
+  const k = c.cosmos[ver] || {};
+  return {
+    rel: k.cosmos_release, imp: k.cosmos_impact, why: k.cosmos_why,
+    tp_release: k.cosmos_release && c.truth_release === true,
+    fp_release: k.cosmos_release && c.truth_release === false,
+    fn_release: !k.cosmos_release && c.truth_release === true,
+    tp_impact: k.cosmos_impact && c.truth_explosion === true,
+    fp_impact: k.cosmos_impact && c.truth_explosion === false,
+  };
+}
+
+function badge(flag, truth) {
+  if (truth == null) return `<span class="pill unk">human: unsure</span>`;
+  return flag === truth ? `<span class="pill ok">✓ correct</span>`
+                        : `<span class="pill bad">✗ ${flag ? "false alarm" : "missed"}</span>`;
+}
+
+function renderFeed() {
+  const ver = $("#f_ver").value, film = $("#f_film").value, show = $("#f_show").value;
+  const rows = DATA.clips.filter(c => {
+    if (film && c.film !== film) return false;
+    const v = verdict(c, ver);
+    if (show === "flagged") return v.rel || v.imp;
+    return !show || v[show];
+  });
+  $("#count").textContent = `${rows.length} clips`;
+  $("#feed").innerHTML = rows.map((c, i) => {
+    const v = verdict(c, ver), flagged = v.rel || v.imp;
+    const truth = [c.truth_release ? "bomb release" : null, c.truth_explosion ? "explosion" : null].filter(Boolean).join(" + ") || "no bomb / no blast";
+    return `<div class="card ${flagged ? "flag" : ""}">
+      <div class="media" data-i="${i}"><img loading="lazy" src="${BASE}files/${c.thumb}" alt="">
+        <div class="play">▶</div>${flagged ? `<div class="tag">${[v.rel?"BOMB RELEASE":null, v.imp?"EXPLOSION":null].filter(Boolean).join(" · ")}</div>` : ""}</div>
+      <div class="body">
+        <div class="row"><b>${esc(c.film)}</b><span class="pill">${fmtT(c.t_start_s)}</span></div>
+        <div class="row"><span class="pill ${v.rel ? "yes" : ""}">release: ${v.rel ? "yes" : "no"}</span>${badge(!!v.rel, c.truth_release)}
+          <span class="pill ${v.imp ? "yes" : ""}">explosion: ${v.imp ? "yes" : "no"}</span>${badge(!!v.imp, c.truth_explosion)}</div>
+        <div class="why"><b>Cosmos:</b> ${esc(v.why)}</div>
+        <div class="muted"><b>Human check:</b> ${esc(truth)}${c.grader_note ? " · " + esc(c.grader_note) : ""}</div>
+        <div class="row"><button class="pri" data-run="${i}">Run Cosmos now</button><span class="muted">sends this clip live with prompt v2</span></div>
+        <div class="out"></div>
+      </div></div>`;
+  }).join("");
+  $("#feed").querySelectorAll(".media").forEach(m => m.onclick = () => {
+    const c = rows[+m.dataset.i];
+    m.innerHTML = `<video controls autoplay playsinline src="${BASE}files/${c.video}"></video>`;
+    m.onclick = null;
+  });
+  $("#feed").querySelectorAll("[data-run]").forEach(b => b.onclick = async () => {
+    const c = rows[+b.dataset.run], out = b.closest(".body").querySelector(".out");
+    b.disabled = true; out.innerHTML = `<span class="spin"></span> <span class="muted">Cosmos is watching the clip…</span>`;
+    try {
+      const r = await fetch(BASE + "api/war/analyze", {method:"POST", headers:{"Content-Type":"application/json"},
+                                                       body: JSON.stringify({video: c.video})});
+      const d = await r.json();
+      if (d.error) throw new Error(d.error);
+      out.innerHTML = `<div class="row"><span class="pill ${d.bomb_release ? "yes" : ""}">release: ${d.bomb_release ? "yes" : "no"}</span>${badge(d.bomb_release, c.truth_release)}
+        <span class="pill ${d.impact ? "yes" : ""}">explosion: ${d.impact ? "yes" : "no"}</span>${badge(d.impact, c.truth_explosion)}
+        <span class="muted">${d.latency_s}s · ${esc(d.model)}</span></div><div class="live">${esc(d.raw)}</div>`;
+    } catch (e) { out.innerHTML = `<span class="pill bad">error</span> <span class="muted">${esc(e.message)}</span>`; }
+    b.disabled = false;
+  });
+}
+
+async function init() {
+  DATA = await (await fetch(BASE + "files/war/index.json")).json();
+  for (const f of [...new Set(DATA.clips.map(c => c.film))])
+    $("#f_film").insertAdjacentHTML("beforeend", `<option>${esc(f)}</option>`);
+  $("#prompt").textContent = DATA.prompt_v2;
+  $("#attr").innerHTML = DATA.attribution.map(a =>
+    `<li><a href="${esc(a.commons_page)}" target="_blank" rel="noopener">${esc(a.title)}</a> · ${esc(a.author)} · ${esc(a.date)} · ${esc(a.license)}${a.shown_in_ui ? "" : " · <i>stats only</i>"}</li>`).join("");
+  for (const id of ["#f_film","#f_ver","#f_show"]) $(id).onchange = () => { renderMetrics(); renderFeed(); };
+  renderMetrics(); renderFeed();
+}
+init().catch(e => { $("#feed").innerHTML = `<div class="panel">Could not load war data: ${esc(e.message)}</div>`; });
+</script>
+</body>
+</html>

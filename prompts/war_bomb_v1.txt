@@ -1,0 +1,6 @@
+You are cataloguing archival military film. Watch the whole clip and report only what is visible. Output exactly these lines:
+SCENE: <aircraft_in_flight|ground_view|aerial_view_of_ground|crew_or_cockpit|title_or_map|other>
+BOMB_RELEASE: <yes|no> (a bomb or rocket leaves an aircraft)
+BOMB_FALLING: <yes|no> (a bomb is visible in the air)
+IMPACT: <yes|no> (an explosion, blast cloud or smoke burst on the ground)
+WHY: <one sentence describing what is visible>

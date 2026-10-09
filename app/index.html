@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vision Zero Agent</title>
+<link rel="icon" href="data:,">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#0b0f14; --panel:#121923; --line:#1f2a37; --txt:#e6edf3; --mut:#8b98a8; --acc:#3fb6ff;
+          --r0:#2f7d4a; --r1:#4f9d5a; --r2:#b7a632; --r3:#e08a2c; --r4:#e04f2c; --r5:#c21a3a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+  header { display:flex; align-items:center; gap:16px; padding:14px 22px; border-bottom:1px solid var(--line); background:#0e141c; position:sticky; top:0; z-index:5; }
+  header h1 { font-size:18px; margin:0; letter-spacing:.3px; }
+  header h1 span { color:var(--acc); }
+  header .sub { color:var(--mut); font-size:12px; }
+  header .right { margin-left:auto; display:flex; gap:8px; align-items:center; font-size:12px; color:var(--mut); }
+  main { display:grid; grid-template-columns: 1fr 420px; gap:18px; padding:18px 22px; }
+  @media (max-width:1100px) { main { grid-template-columns:1fr; } }
+  .kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+  .kpi { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 14px; }
+  .kpi .v { font-size:26px; font-weight:600; }
+  .kpi .l { color:var(--mut); font-size:12px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:14px; margin-bottom:14px; }
+  .panel h2 { margin:0 0 10px; font-size:13px; text-transform:uppercase; letter-spacing:.8px; color:var(--mut); }
+  .cams { display:flex; flex-direction:column; gap:6px; }
+  .cam { display:grid; grid-template-columns: 170px 1fr 120px; gap:10px; align-items:center; cursor:pointer; padding:4px 6px; border-radius:6px; }
+  .cam:hover, .cam.sel { background:#182230; }
+  .cam .name { font-family:ui-monospace,Menlo,monospace; font-size:12px; }
+  .cam .name small { color:var(--mut); display:block; }
+  .bar { height:10px; background:#1b2531; border-radius:5px; overflow:hidden; }
+  .bar i { display:block; height:100%; }
+  .cam .n { color:var(--mut); font-size:12px; text-align:right; }
+  .filters { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:12px; }
+  select, input[type=text], textarea, button { background:#0e151e; color:var(--txt); border:1px solid var(--line); border-radius:7px; padding:7px 10px; font:inherit; }
+  button { cursor:pointer; } button.pri { background:var(--acc); color:#04121c; border-color:var(--acc); font-weight:600; }
+  button:disabled { opacity:.5; cursor:default; }
+  .feed { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px; }
+  .card { background:#0e151e; border:1px solid var(--line); border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+  .card .media { position:relative; aspect-ratio:16/9; background:#000; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .card .media video { width:100%; height:100%; object-fit:cover; }
+  .card .media .play { position:absolute; font-size:36px; color:#fff; opacity:.8; }
+  .card .media canvas.boxes { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .card .body { padding:10px 12px; display:flex; flex-direction:column; gap:6px; }
+  .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .pill { font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid var(--line); color:var(--mut); font-family:ui-monospace,Menlo,monospace; }
+  .risk { font-weight:700; color:#fff; padding:2px 9px; border-radius:6px; font-size:12px; }
+  .r0{background:var(--r0)} .r1{background:var(--r1)} .r2{background:var(--r2)} .r3{background:var(--r3)} .r4{background:var(--r4)} .r5{background:var(--r5)}
+  .why { font-size:13px; }
+  .nar { color:var(--mut); font-size:12px; max-height:3.9em; overflow:hidden; }
+  .card .foot { display:flex; gap:6px; margin-top:4px; }
+  .card .foot button { font-size:12px; padding:4px 8px; }
+  .card.selected { outline:2px solid var(--acc); }
+  .report { white-space:pre-wrap; font-size:13px; line-height:1.5; max-height:60vh; overflow:auto; }
+  .report h1,.report h2,.report h3 { font-size:14px; margin:10px 0 4px; }
+  .report table { border-collapse:collapse; width:100%; margin:6px 0; white-space:normal; font-size:12px; }
+  .report th, .report td { border:1px solid var(--line); padding:4px 6px; text-align:left; vertical-align:top; }
+  .report th { background:#182230; }
+  .report hr { border:0; border-top:1px solid var(--line); margin:8px 0; }
+  .muted { color:var(--mut); font-size:12px; }
+  .spin { display:inline-block; width:12px; height:12px; border:2px solid var(--mut); border-top-color:transparent; border-radius:50%; animation:s 1s linear infinite; vertical-align:middle; }
+  @keyframes s { to { transform:rotate(360deg); } }
+  .evid { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+  .evid a { color:var(--acc); font-size:12px; cursor:pointer; }
+  textarea { width:100%; min-height:60px; resize:vertical; }
+  .hist { display:flex; gap:6px; flex-wrap:wrap; }
+  .hist .h { font-size:11px; padding:3px 8px; border-radius:6px; background:#182230; color:var(--txt); cursor:pointer; }
+  .hist .h b { color:var(--acc); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Vision <span>Zero</span> Agent</h1>
+  <div class="sub">Cross-camera safety incidents from the VSS archive: people vs. vehicles on city streets, workers vs. robots on the warehouse floor · risk scored on the video by Cosmos Reason · reports by W&amp;B inference</div>
+  <div class="right"><a href="war" style="color:var(--acc)">War footage</a><a href="files/demo/" style="color:var(--acc)">Demo video</a><span id="status">loading…</span><button id="prescore" title="Semantic-search for risky street situations and have Cosmos Reason score those clips from the video">⚡ score risky street clips</button><button id="prescore_wh" title="Have Cosmos Reason score every warehouse clip for robot/AGV/forklift vs. worker proximity">⚙ score warehouse floor</button><button id="refresh" title="Rescan archive">⟳ rescan</button></div>
+</header>
+<main>
+  <section>
+    <div class="kpis">
+      <div class="kpi"><div class="v" id="k_clips">–</div><div class="l">clips in archive</div></div>
+      <div class="kpi"><div class="v" id="k_scored">–</div><div class="l">clips with Vision Zero scoring</div></div>
+      <div class="kpi"><div class="v" id="k_high">–</div><div class="l">high-risk events (RISK ≥ 3) · <span id="k_conf">0</span> human-reviewed</div></div>
+      <div class="kpi"><div class="v" id="k_cams">–</div><div class="l">cameras</div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Camera scoreboard <span class="muted">(avg risk · click to filter)</span></h2>
+      <div class="cams" id="cams"></div>
+      <div class="hist" id="hist" style="margin-top:10px"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Incident feed</h2>
+      <div class="filters">
+        <select id="f_dom"><option value="">streets + warehouse</option><option value="street">streets</option><option value="warehouse">warehouse floor</option></select>
+        <select id="f_cam"><option value="">all cameras</option></select>
+        <select id="f_event"><option value="">any event</option></select>
+        <select id="f_risk"><option value="0">risk ≥ 0</option><option value="2">risk ≥ 2</option><option value="3" selected>risk ≥ 3</option><option value="4">risk ≥ 4</option></select>
+        <label class="muted"><input type="checkbox" id="f_reviewed"> reviewed only</label>
+        <label class="muted"><input type="checkbox" id="f_unscored"> include unscored clips</label>
+        <span style="flex:1"></span>
+        <input type="text" id="q" placeholder="semantic search the archive, e.g. cyclist squeezed by bus" style="min-width:280px">
+        <button id="search">search</button>
+        <button id="clear" style="display:none">clear</button>
+      </div>
+      <div class="muted" id="feedinfo"></div>
+      <div class="feed" id="feed"></div>
+    </div>
+  </section>
+
+  <aside>
+    <div class="panel">
+      <h2>Incident report <span class="muted">(W&amp;B inference)</span></h2>
+      <div class="muted" id="selinfo">Select clips in the feed (☐) or leave empty for the top-15 by risk in the current camera.</div>
+      <input type="text" id="focus" placeholder="optional focus, e.g. cyclist safety at crosswalks" style="width:100%;margin:8px 0">
+      <div class="row"><button class="pri" id="report">Generate report</button><button id="clearsel">clear selection</button><span id="repstat" class="muted"></span></div>
+      <div class="report" id="reportout"></div>
+    </div>
+
+    <div class="panel">
+      <h2>Watch rule <span class="muted">(LLM-compiled alert)</span></h2>
+      <textarea id="rule" placeholder="e.g. alert me when a cyclist is within 1 meter of a moving vehicle on any NYC camera, or when an AGV comes near a worker in the warehouse"></textarea>
+      <div class="row" style="margin-top:6px"><button class="pri" id="runrule">Compile &amp; run</button><span id="rulestat" class="muted"></span></div>
+      <pre class="muted" id="rulespec" style="white-space:pre-wrap;margin:6px 0 0"></pre>
+    </div>
+
+    <div class="panel">
+      <h2>Ask the archive <span class="muted">(VSS agent)</span></h2>
+      <textarea id="question" placeholder="e.g. Where do pedestrians most often step into traffic against the signal?"></textarea>
+      <div class="row" style="margin-top:6px"><button class="pri" id="ask">Ask</button><span id="askstat" class="muted"></span></div>
+      <div class="report" id="askout"></div>
+      <div class="evid" id="askevid"></div>
+    </div>
+  </aside>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const EVENTS = ["near_miss","crosswalk_conflict","bike_lane_blocked","hard_brake","red_light_run","dooring","jaywalking","illegal_turn","path_conflict","human_in_robot_path","contact","blocked_aisle"];
+const selected = new Set();
+let camFilter = "";
+let searchMode = false;
+
+const riskColor = r => getComputedStyle(document.documentElement).getPropertyValue(`--r${Math.max(0,Math.min(5,Math.round(r)))}`);
+const esc = s => (s||"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// Served behind the /app Ingress prefix; absolute /api/... would hit the VSS backend instead.
+const BASE = location.pathname.startsWith("/app") ? "/app/" : "/";
+const url = path => BASE + path.replace(/^\//, "");
+
+async function api(path, opts) {
+  const r = await fetch(url(path), opts);
+  const j = await r.json();
+  if (!r.ok) throw new Error(j.error || r.statusText);
+  return j;
+}
+
+async function loadStats() {
+  const s = await api("/api/stats");
+  $("#k_clips").textContent = s.total_clips.toLocaleString();
+  $("#k_scored").textContent = s.scored_clips.toLocaleString();
+  $("#k_high").textContent = s.high_risk_events.toLocaleString();
+  $("#k_conf").textContent = `${s.confirmed} confirmed, ${s.dismissed} dismissed`;
+  $("#k_cams").textContent = s.cameras.length;
+  $("#status").innerHTML = s.loading ? '<span class="spin"></span> scanning archive' : `scanned ${new Date(s.loaded_at*1000).toLocaleTimeString()}`;
+  const cams = $("#cams"); cams.innerHTML = "";
+  const sel = $("#f_cam"); const cur = sel.value; sel.innerHTML = '<option value="">all cameras</option>';
+  for (const c of s.cameras) {
+    if ($("#f_dom").value && c.domain !== $("#f_dom").value) continue;
+    const pct = c.avg_risk != null ? (c.avg_risk/5*100) : 0;
+    const el = document.createElement("div");
+    el.className = "cam" + (camFilter===c.camera_id ? " sel" : "");
+    el.innerHTML = `<div class="name">${esc(c.camera_id)}<small>${esc(c.location||"")}</small></div>
+      <div class="bar"><i style="width:${pct}%;background:${c.avg_risk!=null?riskColor(c.avg_risk):'#333'}"></i></div>
+      <div class="n">${c.avg_risk!=null ? `avg ${c.avg_risk} · ${c.high_risk} high` : `${c.clips} unscored`}</div>`;
+    el.onclick = () => { camFilter = camFilter===c.camera_id ? "" : c.camera_id; $("#f_cam").value = camFilter; loadStats(); loadFeed(); };
+    cams.appendChild(el);
+    const o = document.createElement("option"); o.value = c.camera_id; o.textContent = `${c.camera_id} (${c.scored}/${c.clips})`; sel.appendChild(o);
+  }
+  sel.value = camFilter || cur;
+  const hist = $("#hist"); hist.innerHTML = "";
+  for (const [e,n] of Object.entries(s.event_totals)) {
+    if (!n) continue;
+    const h = document.createElement("span"); h.className = "h"; h.innerHTML = `${e.replace(/_/g," ")} <b>${n}</b>`;
+    h.onclick = () => { $("#f_event").value = e; loadFeed(); };
+    hist.appendChild(h);
+  }
+}
+
+function card(c, extra) {
+  const r = c.risk;
+  const el = document.createElement("div");
+  el.className = "card" + (selected.has(c.source) ? " selected" : "");
+  const streamUrl = url(`api/stream?source=${encodeURIComponent(c.source)}`);
+  el.innerHTML = `
+    <div class="media" title="play"><span class="play">▶</span></div>
+    <div class="body">
+      <div class="row">
+        ${r!=null ? `<span class="risk r${r}">RISK ${r}</span>` : '<span class="pill">unscored</span>'}
+        ${c.event && c.event!=="none" ? `<span class="pill">${esc(c.event)}</span>` : ""}
+        ${c.vulnerable && c.vulnerable!=="none" ? `<span class="pill">${esc(c.vulnerable)}</span>` : ""}
+        ${c.machine && c.machine!=="none" ? `<span class="pill" title="machine involved">${esc(c.machine)}</span>` : ""}
+        ${c.humans_near ? `<span class="pill" title="workers near a moving machine">${c.humans_near} worker${c.humans_near>1?"s":""} near</span>` : ""}
+        ${c.confirmed ? '<span class="pill" style="border-color:var(--r1);color:#7ee08f" title="a person watched this clip and confirmed the risk">✓ reviewed</span>' : (c.scored ? '<span class="pill" title="model score, not yet checked by a person">unreviewed</span>' : "")}
+        ${c.llm_scored ? '<span class="pill" title="risk scored from the video by Cosmos Reason" style="border-color:var(--acc);color:var(--acc)">video-verified</span>' : ""}
+        ${extra||""}
+      </div>
+      <div class="row muted"><span class="pill">${esc(c.camera_id||"")}</span><span>${esc(c.location||"")}</span><span>${c.start_sec!=null?`${c.start_sec}–${c.end_sec}s`:""}</span></div>
+      ${c.review_note ? `<div class="why"><b>Reviewer:</b> ${esc(c.review_note)}</div>` : ""}
+      ${c.why ? `<div class="${c.review_note ? "nar" : "why"}">${c.review_note ? "Model: " : ""}${esc(c.why)}</div>` : ""}
+      <div class="nar" title="${esc(c.narrative)}">${esc(c.narrative)}</div>
+      <div class="foot">
+        ${c.scored ? `<button data-act="ok" title="I watched it: the risk is real">✓</button><button data-act="no" title="I watched it: not a real risk, hide it">✗</button>` : ""}
+        <button data-act="sel">${selected.has(c.source)?"☑ selected":"☐ select"}</button>
+        ${!c.scored ? '<button data-act="score">score on video</button>' : ""}
+        <button data-act="open" title="open raw stream">↗</button>
+      </div>
+    </div>`;
+  el.querySelector(".media").onclick = (ev) => {
+    const m = ev.currentTarget; if (m.querySelector("video")) return;
+    m.innerHTML = `<video src="${streamUrl}" controls autoplay loop playsinline></video>`;
+    attachBoxes(m, c);
+  };
+  el.querySelector('[data-act=sel]').onclick = () => { selected.has(c.source) ? selected.delete(c.source) : selected.add(c.source); updateSel(); loadFeed(); };
+  el.querySelector('[data-act=open]').onclick = () => window.open(streamUrl, "_blank");
+  const review = async (verdict) => {
+    const note = verdict === "confirmed" ? (prompt("What actually happens? (optional, shown on the card and used in reports)", c.review_note || "") ?? "") : "";
+    await api("/api/review", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({source: c.source, verdict, note})});
+    await loadStats(); await loadFeed();
+  };
+  el.querySelector('[data-act=ok]')?.addEventListener("click", () => review("confirmed"));
+  el.querySelector('[data-act=no]')?.addEventListener("click", () => review("dismissed"));
+  const sb = el.querySelector('[data-act=score]');
+  if (sb) sb.onclick = async () => { sb.disabled = true; sb.innerHTML = '<span class="spin"></span>'; try { await api("/api/score", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({source:c.source})}); await loadStats(); await loadFeed(); } catch(e){ sb.textContent = "error"; } };
+  return el;
+}
+
+const VEHICLES = new Set(["car","truck","bus","motorcycle","bicycle","train"]);
+// YOLO (COCO) has no forklift/AGV class; on the warehouse floor any non-person box is a machine candidate.
+async function attachBoxes(media, c) {
+  const video = media.querySelector("video");
+  let d;
+  try { d = await api(`/api/detections?source=${encodeURIComponent(c.source)}`); } catch (e) { return; }
+  if (!d.frames || !d.frames.length) return;
+  const byFrame = new Map(d.frames.map(f => [f.frame_index, f.detections || []]));
+  const [vh, vw] = d.video_shape, fps = d.fps || 30;
+  const risky = (c.risk ?? 0) >= 3 || c.confirmed;
+  const wh = c.domain === "warehouse";
+  const cv = document.createElement("canvas"); cv.className = "boxes"; media.appendChild(cv);
+  const g = cv.getContext("2d");
+  const draw = () => {
+    if (!media.isConnected) return;
+    const W = media.clientWidth, H = media.clientHeight;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    g.clearRect(0, 0, W, H);
+    const s = Math.max(W / vw, H / vh), ox = (W - vw * s) / 2, oy = (H - vh * s) / 2;
+    let fi = Math.floor(video.currentTime * fps), dets = byFrame.get(fi);
+    for (let k = 1; !dets && k < 6; k++) dets = byFrame.get(fi - k);
+    const people = [], others = [];
+    for (const b of dets || []) {
+      const [x1, y1, x2, y2] = b.bbox, r = [ox + x1 * s, oy + y1 * s, (x2 - x1) * s, (y2 - y1) * s];
+      const isP = b.label === "person";
+      if (!isP && !VEHICLES.has(b.label) && !wh) continue;
+      const color = isP ? (risky ? "#ff4d4f" : "#7ee08f") : VEHICLES.has(b.label) ? "#ffb35c" : "#4cc2ff";
+      g.strokeStyle = color; g.lineWidth = isP && risky ? 2.5 : 1.5; g.strokeRect(...r);
+      g.fillStyle = color; g.font = "10px ui-monospace,monospace";
+      g.fillText(isP ? "person" : VEHICLES.has(b.label) ? b.label : "object", r[0] + 2, r[1] > 12 ? r[1] - 3 : r[1] + 11);
+      (isP ? people : others).push([r[0] + r[2] / 2, r[1] + r[3] / 2]);
+    }
+    if (risky && people.length && others.length) {
+      let best = null;
+      for (const p of people) for (const o of others) { const dd = Math.hypot(p[0] - o[0], p[1] - o[1]); if (!best || dd < best[0]) best = [dd, p, o]; }
+      g.strokeStyle = "#ff4d4f"; g.setLineDash([5, 4]); g.lineWidth = 2;
+      g.beginPath(); g.moveTo(...best[1]); g.lineTo(...best[2]); g.stroke(); g.setLineDash([]);
+    }
+    requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+function updateSel() {
+  $("#selinfo").textContent = selected.size ? `${selected.size} clip(s) selected for the report.` : "Select clips in the feed (☐) or leave empty for the top-15 by risk in the current camera.";
+}
+
+async function loadFeed() {
+  if (searchMode) return;
+  const p = new URLSearchParams({ domain: $("#f_dom").value, camera: $("#f_cam").value, event: $("#f_event").value, min_risk: $("#f_risk").value, unscored: $("#f_unscored").checked ? "1" : "0", reviewed: $("#f_reviewed").checked ? "1" : "0", limit: 60 });
+  const d = await api("/api/events?" + p);
+  $("#feedinfo").textContent = `${d.total} matching clips, showing ${d.events.length}, worst first.`;
+  const feed = $("#feed"); feed.innerHTML = "";
+  if (!d.events.length) feed.innerHTML = '<div class="muted">Nothing matches yet. If re-ingest is still running, scores appear as segments are indexed (⟳ rescan). Tick "include unscored" to browse and score clips with the LLM.</div>';
+  for (const c of d.events) feed.appendChild(card(c));
+}
+
+async function runSearch() {
+  const q = $("#q").value.trim(); if (!q) return;
+  searchMode = true; $("#clear").style.display = "";
+  $("#feedinfo").innerHTML = '<span class="spin"></span> searching';
+  try {
+    const d = await api("/api/search?" + new URLSearchParams({ q, camera: $("#f_cam").value, top_k: 24 }));
+    $("#feedinfo").textContent = `${d.hits.length} semantic hits for "${q}" (hybrid caption+visual search).`;
+    const feed = $("#feed"); feed.innerHTML = "";
+    for (const h of d.hits) feed.appendChild(card(h, `<span class="pill">sim ${(h.similarity||0).toFixed(2)}</span>`));
+  } catch (e) { $("#feedinfo").textContent = "search failed: " + e.message; }
+}
+
+$("#search").onclick = runSearch;
+$("#q").onkeydown = e => { if (e.key === "Enter") runSearch(); };
+$("#clear").onclick = () => { searchMode = false; $("#q").value = ""; $("#clear").style.display = "none"; loadFeed(); };
+for (const id of ["f_dom","f_cam","f_event","f_risk","f_unscored","f_reviewed"]) $("#"+id).onchange = () => { if (id==="f_cam") camFilter = $("#f_cam").value; searchMode = false; $("#clear").style.display="none"; loadStats(); loadFeed(); };
+$("#refresh").onclick = async () => { await api("/api/refresh", {method:"POST"}); setTimeout(()=>{loadStats(); loadFeed();}, 4000); };
+$("#prescore_wh").onclick = () => startPrescore({ domain: "warehouse" });
+$("#prescore").onclick = () => startPrescore({ camera: $("#f_cam").value });
+async function startPrescore(body) {
+  await api("/api/prescore", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)});
+  const tick = async () => {
+    const s = await api("/api/status"); const p = s.prescore;
+    $("#status").innerHTML = p.running ? `<span class="spin"></span> Cosmos scoring ${p.done}/${p.total}` : `${s.llm_scored} clips scored on video`;
+    if (p.running) setTimeout(tick, 3000); else { loadStats(); loadFeed(); }
+  };
+  tick();
+}
+$("#clearsel").onclick = () => { selected.clear(); updateSel(); loadFeed(); };
+
+$("#report").onclick = async () => {
+  $("#repstat").innerHTML = '<span class="spin"></span> writing'; $("#report").disabled = true;
+  try {
+    const d = await api("/api/report", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ sources: [...selected], camera: $("#f_cam").value, focus: $("#focus").value })});
+    $("#reportout").innerHTML = md(d.report);
+    $("#repstat").textContent = `${d.clips_used} clips · ${d.model} · ${d.usage?.total_tokens ?? "?"} tok`;
+  } catch (e) { $("#repstat").textContent = "error: " + e.message; }
+  $("#report").disabled = false;
+};
+
+$("#runrule").onclick = async () => {
+  $("#rulestat").innerHTML = '<span class="spin"></span> compiling';
+  try {
+    const d = await api("/api/rule", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ rule: $("#rule").value })});
+    $("#rulespec").textContent = JSON.stringify(d.spec);
+    $("#rulestat").textContent = `${d.total} alert(s)`;
+    searchMode = true; $("#clear").style.display = "";
+    $("#feedinfo").textContent = `${d.total} clips trigger this rule, worst first.`;
+    const feed = $("#feed"); feed.innerHTML = "";
+    for (const c of d.matches) feed.appendChild(card(c, '<span class="pill" style="border-color:var(--r4);color:var(--r4)">ALERT</span>'));
+  } catch (e) { $("#rulestat").textContent = "error: " + e.message; }
+};
+
+$("#ask").onclick = async () => {
+  $("#askstat").innerHTML = '<span class="spin"></span> thinking'; $("#askout").textContent = ""; $("#askevid").innerHTML = "";
+  try {
+    const d = await api("/api/ask", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({ question: $("#question").value, camera: $("#f_cam").value })});
+    $("#askout").innerHTML = md(d.answer || "(no answer)");
+    $("#askstat").textContent = `${d.chunks.length} evidence clips`;
+    for (const c of d.chunks) {
+      const a = document.createElement("a"); a.textContent = `▶ ${c.camera_id||""} · ${(c.original_video||"").split("/").pop()} @ ${c.start ?? 0}s (sim ${(c.score||0).toFixed(2)})`;
+      a.onclick = () => window.open(url(`api/stream?source=${encodeURIComponent(c.preview_source)}`), "_blank");
+      $("#askevid").appendChild(a);
+    }
+  } catch (e) { $("#askstat").textContent = "error: " + e.message; }
+};
+
+// minimal markdown → html (headings, bold, lists, tables, rules)
+function md(t) {
+  const inline = s => s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\*(.+?)\*/g, "<i>$1</i>");
+  const cells = s => s.trim().replace(/^\||\|$/g, "").split("|").map(c => inline(c.trim()));
+  const lines = esc(t).split("\n"), out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (/^\s*\|/.test(l) && /^\s*\|?\s*:?-{2,}/.test(lines[i + 1] || "")) {
+      let html = "<table><tr>" + cells(l).map(c => `<th>${c}</th>`).join("") + "</tr>";
+      i += 2;
+      while (i < lines.length && /^\s*\|/.test(lines[i])) html += "<tr>" + cells(lines[i++]).map(c => `<td>${c}</td>`).join("") + "</tr>";
+      i--;
+      out.push(html + "</table>");
+    } else if (/^\s*-{3,}\s*$/.test(l)) out.push("<hr>");
+    else if (/^#{4,6} /.test(l)) out.push(`<h3>${inline(l.replace(/^#+ /, ""))}</h3>`);
+    else if (/^### /.test(l)) out.push(`<h3>${inline(l.slice(4))}</h3>`);
+    else if (/^## /.test(l)) out.push(`<h2>${inline(l.slice(3))}</h2>`);
+    else if (/^# /.test(l)) out.push(`<h1>${inline(l.slice(2))}</h1>`);
+    else if (/^\s*[-*] /.test(l)) out.push("• " + inline(l.replace(/^\s*[-*] /, "")));
+    else out.push(inline(l));
+  }
+  return out.join("\n").replace(/\n{3,}/g, "\n\n");
+}
+
+(function init() {
+  const ev = $("#f_event"); for (const e of EVENTS) { const o = document.createElement("option"); o.value = e; o.textContent = e.replace(/_/g," "); ev.appendChild(o); }
+  loadStats().then(loadFeed);
+  setInterval(loadStats, 30000);
+})();
+</script>
+</body>
+</html>

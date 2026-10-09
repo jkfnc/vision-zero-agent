@@ -1,0 +1,254 @@
+{
+ "Disney Bomb 1945 | v1": {
+  "graded": 16,
+  "flagged_release": 3,
+  "flagged_impact": 0,
+  "release": {
+   "n": 16,
+   "tp": 2,
+   "fp": 1,
+   "fn": 3,
+   "precision": 0.667,
+   "recall": 0.4
+  },
+  "explosion": {
+   "n": 16,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "recall": null
+  }
+ },
+ "Disney Bomb 1945 | v2": {
+  "graded": 16,
+  "flagged_release": 5,
+  "flagged_impact": 0,
+  "release": {
+   "n": 16,
+   "tp": 3,
+   "fp": 2,
+   "fn": 2,
+   "precision": 0.6,
+   "recall": 0.6
+  },
+  "explosion": {
+   "n": 16,
+   "tp": 0,
+   "fp": 0,
+   "fn": 0,
+   "precision": null,
+   "recall": null
+  }
+ },
+ "U.S. Army Air Forces - Special Delivery | v1": {
+  "graded": 61,
+  "flagged_release": 25,
+  "flagged_impact": 25,
+  "release": {
+   "n": 61,
+   "tp": 1,
+   "fp": 24,
+   "fn": 1,
+   "precision": 0.04,
+   "recall": 0.5
+  },
+  "explosion": {
+   "n": 61,
+   "tp": 19,
+   "fp": 6,
+   "fn": 1,
+   "precision": 0.76,
+   "recall": 0.95
+  }
+ },
+ "U.S. Army Air Forces - Special Delivery | v2": {
+  "graded": 61,
+  "flagged_release": 24,
+  "flagged_impact": 18,
+  "release": {
+   "n": 61,
+   "tp": 1,
+   "fp": 23,
+   "fn": 1,
+   "precision": 0.042,
+   "recall": 0.5
+  },
+  "explosion": {
+   "n": 61,
+   "tp": 15,
+   "fp": 3,
+   "fn": 5,
+   "precision": 0.833,
+   "recall": 0.75
+  }
+ },
+ "USAAF B-17 Flying Fortresses bombing raids | v1": {
+  "graded": 33,
+  "flagged_release": 9,
+  "flagged_impact": 8,
+  "release": {
+   "n": 33,
+   "tp": 2,
+   "fp": 7,
+   "fn": 0,
+   "precision": 0.222,
+   "recall": 1.0
+  },
+  "explosion": {
+   "n": 30,
+   "tp": 6,
+   "fp": 0,
+   "fn": 1,
+   "precision": 1.0,
+   "recall": 0.857
+  }
+ },
+ "USAAF B-17 Flying Fortresses bombing raids | v2": {
+  "graded": 33,
+  "flagged_release": 10,
+  "flagged_impact": 6,
+  "release": {
+   "n": 33,
+   "tp": 2,
+   "fp": 8,
+   "fn": 0,
+   "precision": 0.2,
+   "recall": 1.0
+  },
+  "explosion": {
+   "n": 30,
+   "tp": 5,
+   "fp": 0,
+   "fn": 2,
+   "precision": 1.0,
+   "recall": 0.714
+  }
+ },
+ "1944-11-22 RAF Sinks Tirpitz | v1": {
+  "graded": 42,
+  "flagged_release": 9,
+  "flagged_impact": 19,
+  "release": {
+   "n": 41,
+   "tp": 0,
+   "fp": 9,
+   "fn": 0,
+   "precision": 0.0,
+   "recall": null
+  },
+  "explosion": {
+   "n": 33,
+   "tp": 12,
+   "fp": 1,
+   "fn": 1,
+   "precision": 0.923,
+   "recall": 0.923
+  }
+ },
+ "1944-11-22 RAF Sinks Tirpitz | v2": {
+  "graded": 42,
+  "flagged_release": 11,
+  "flagged_impact": 23,
+  "release": {
+   "n": 41,
+   "tp": 0,
+   "fp": 10,
+   "fn": 0,
+   "precision": 0.0,
+   "recall": null
+  },
+  "explosion": {
+   "n": 33,
+   "tp": 12,
+   "fp": 2,
+   "fn": 1,
+   "precision": 0.857,
+   "recall": 0.923
+  }
+ },
+ "Colorized film footage of UK RAF night bombing of German cities (1943-1945) | v1": {
+  "graded": 70,
+  "flagged_release": 3,
+  "flagged_impact": 46,
+  "release": {
+   "n": 70,
+   "tp": 0,
+   "fp": 3,
+   "fn": 0,
+   "precision": 0.0,
+   "recall": null
+  },
+  "explosion": {
+   "n": 29,
+   "tp": 14,
+   "fp": 2,
+   "fn": 2,
+   "precision": 0.875,
+   "recall": 0.875
+  }
+ },
+ "Colorized film footage of UK RAF night bombing of German cities (1943-1945) | v2": {
+  "graded": 70,
+  "flagged_release": 1,
+  "flagged_impact": 44,
+  "release": {
+   "n": 70,
+   "tp": 0,
+   "fp": 1,
+   "fn": 0,
+   "precision": 0.0,
+   "recall": null
+  },
+  "explosion": {
+   "n": 29,
+   "tp": 13,
+   "fp": 1,
+   "fn": 3,
+   "precision": 0.929,
+   "recall": 0.812
+  }
+ },
+ "ALL | v1": {
+  "graded": 222,
+  "flagged_release": 49,
+  "flagged_impact": 98,
+  "release": {
+   "n": 221,
+   "tp": 5,
+   "fp": 44,
+   "fn": 4,
+   "precision": 0.102,
+   "recall": 0.556
+  },
+  "explosion": {
+   "n": 169,
+   "tp": 51,
+   "fp": 9,
+   "fn": 5,
+   "precision": 0.85,
+   "recall": 0.911
+  }
+ },
+ "ALL | v2": {
+  "graded": 222,
+  "flagged_release": 51,
+  "flagged_impact": 91,
+  "release": {
+   "n": 221,
+   "tp": 6,
+   "fp": 44,
+   "fn": 3,
+   "precision": 0.12,
+   "recall": 0.667
+  },
+  "explosion": {
+   "n": 169,
+   "tp": 45,
+   "fp": 6,
+   "fn": 11,
+   "precision": 0.882,
+   "recall": 0.804
+  }
+ }
+}

@@ -1,0 +1,110 @@
+[
+ {
+  "order": 1,
+  "film": "Disney Bomb (1945)",
+  "source": "/home/jayakumaronline/vision-zero-work/wm/disney.ogv",
+  "clip": 9,
+  "film_timestamp": "00:45",
+  "t_start_s": 45.0,
+  "duration_s": 4.0,
+  "cosmos_verdict": "BOMB RELEASE",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 2,
+  "film": "U.S. Army Air Forces - Special Delivery",
+  "source": "/home/jayakumaronline/vision-zero-work/wm2/sd.webm",
+  "clip": 96,
+  "film_timestamp": "08:01",
+  "t_start_s": 481.5,
+  "duration_s": 3.5,
+  "cosmos_verdict": "BOMB RELEASE",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 3,
+  "film": "USAAF B-17 Flying Fortresses bombing raids",
+  "source": "/home/jayakumaronline/vision-zero-work/wm3/b17/src.webm",
+  "clip": 37,
+  "film_timestamp": "03:06",
+  "t_start_s": 186.3,
+  "duration_s": 3.7,
+  "cosmos_verdict": "BOMB RELEASE",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 4,
+  "film": "USAAF B-17 Flying Fortresses bombing raids",
+  "source": "/home/jayakumaronline/vision-zero-work/wm3/b17/src.webm",
+  "clip": 9,
+  "film_timestamp": "00:45",
+  "t_start_s": 45.5,
+  "duration_s": 4.0,
+  "cosmos_verdict": "BOMB RELEASE + EXPLOSION",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 5,
+  "film": "USAAF B-17 Flying Fortresses bombing raids",
+  "source": "/home/jayakumaronline/vision-zero-work/wm3/b17/src.webm",
+  "clip": 12,
+  "film_timestamp": "01:00",
+  "t_start_s": 60.0,
+  "duration_s": 3.5,
+  "cosmos_verdict": "EXPLOSION",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 6,
+  "film": "RAF Sinks Tirpitz (Universal Newsreel, 1944)",
+  "source": "/home/jayakumaronline/vision-zero-work/wm3/tirpitz/src.ogv",
+  "clip": 12,
+  "film_timestamp": "01:00",
+  "t_start_s": 60.0,
+  "duration_s": 4.0,
+  "cosmos_verdict": "EXPLOSION",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 7,
+  "film": "RAF night bombing of German cities (colorized)",
+  "source": "/home/jayakumaronline/vision-zero-work/wm3/rafnight/src.webm",
+  "clip": 15,
+  "film_timestamp": "01:15",
+  "t_start_s": 75.3,
+  "duration_s": 4.0,
+  "cosmos_verdict": "EXPLOSION",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 8,
+  "film": "U.S. Army Air Forces - Special Delivery",
+  "source": "/home/jayakumaronline/vision-zero-work/wm2/sd.webm",
+  "clip": 116,
+  "film_timestamp": "09:40",
+  "t_start_s": 580.0,
+  "duration_s": 4.0,
+  "cosmos_verdict": "EXPLOSION",
+  "human_check": "correct",
+  "false_alarm": false
+ },
+ {
+  "order": 9,
+  "film": "U.S. Army Air Forces - Special Delivery",
+  "source": "/home/jayakumaronline/vision-zero-work/wm2/sd.webm",
+  "clip": 24,
+  "film_timestamp": "02:00",
+  "t_start_s": 120.0,
+  "duration_s": 5.0,
+  "cosmos_verdict": "BOMB RELEASE",
+  "human_check": "FALSE ALARM (supply parachutes)",
+  "false_alarm": true
+ }
+]

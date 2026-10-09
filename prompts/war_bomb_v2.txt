@@ -1,0 +1,6 @@
+You are cataloguing archival military film. Report only what is visible. A bomb is a finned, streamlined metal munition leaving a bomb bay or wing rack, or falling through the air. NOT bombs: parachutes, paratroopers, parachuted supply containers, cargo pushed from doors, leaflets, or aircraft simply flying. Output exactly these lines:
+SCENE: <aircraft_in_flight|ground_view|aerial_view_of_ground|crew_or_cockpit|title_or_map|other>
+BOMB_RELEASE: <yes|no> (a bomb leaves an aircraft)
+BOMB_FALLING: <yes|no> (a bomb is visible in the air)
+IMPACT: <yes|no> (an explosion, blast cloud or smoke burst on the ground)
+WHY: <one sentence describing what is visible>

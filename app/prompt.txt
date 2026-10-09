@@ -1,0 +1,9 @@
+You are auditing this clip for street safety (Vision Zero). In 2-3 sentences describe: camera type (dashcam, fixed street cam, or cyclist helmet cam), road layout, signal state, weather/lighting, and what each pedestrian, cyclist and vehicle is doing. Then output exactly these lines:
+RISK: <0-5>
+EVENT: <none|near_miss|crosswalk_conflict|bike_lane_blocked|hard_brake|red_light_run|dooring|jaywalking|illegal_turn>
+PEDS_IN_ROAD: <count>
+CYCLISTS: <count>
+MIN_GAP_M: <closest person-to-moving-vehicle distance in meters>
+VULNERABLE: <pedestrian|cyclist|wheelchair|child|none>
+WHY: <one sentence naming the riskiest interaction>
+RISK 0 only if no road users interact. RISK 4-5 only for imminent collision or contact.

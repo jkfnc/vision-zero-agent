@@ -1,0 +1,50 @@
+[
+ {
+  "id": "01_title",
+  "text": "This is the Vision Zero Agent. It finds safety incidents in hours of camera footage, and checks them on the video itself."
+ },
+ {
+  "id": "02_problem",
+  "text": "Cities and warehouses record thousands of hours of video that nobody watches. Our archive on VAST holds over three thousand five hundred clips from thirteen cameras: dashcams, a cyclist's helmet camera, street cameras, and two warehouse floors."
+ },
+ {
+  "id": "03_overview",
+  "text": "The agent scans the whole archive, ranks every camera by risk, and keeps a live feed of the worst moments first."
+ },
+ {
+  "id": "04_warehouse",
+  "text": "On the warehouse floor, NVIDIA Cosmos Reason, running on CoreWeave GPUs, watches every five second clip. Here a worker walks right up to a moving forklift as it turns. YOLO boxes from the VAST pipeline mark the people, in red when the clip is risky. Cosmos rates it risk three, names the machine, and counts the workers nearby."
+ },
+ {
+  "id": "05_review",
+  "text": "A person stays in the loop. Reviewers confirm or dismiss each alert with a note, and confirmed incidents rise to the top. A simple consistency rule removes alerts where Cosmos itself saw no human near the machine."
+ },
+ {
+  "id": "06_street",
+  "text": "The same agent covers city streets. On the cyclist's helmet camera it flags close passes, blocked bike lanes and drivers cutting across the rider's path."
+ },
+ {
+  "id": "07_rule",
+  "text": "Safety teams can write a watch rule in plain English. A model on Weights and Biases inference turns it into a filter, and matching clips appear instantly."
+ },
+ {
+  "id": "08_report",
+  "text": "With one click, the agent writes an incident report: the worst events, the patterns across cameras, and recommended fixes, with reviewer notes taking priority over the model."
+ },
+ {
+  "id": "09_wandb",
+  "text": "Every Cosmos and language model call is traced in Weights and Biases Weave, and we log a measured evaluation. On human checked clips, Cosmos agreed with reviewers on eight of ten street clips, and six of six warehouse clips."
+ },
+ {
+  "id": "10_war",
+  "text": "We also stress tested Cosmos on five public domain archival war films, two hundred twenty two hand checked clips. It finds explosions with eighty five percent precision. But bomb releases were mostly false alarms, even with a stricter prompt, because parachutes and cargo drops look alike. Knowing that is exactly why we measure."
+ },
+ {
+  "id": "11_stack",
+  "text": "Built in one day with Cursor, on VAST for video search and storage, NVIDIA Cosmos on CoreWeave GPUs, and Weights and Biases for inference, tracing and evaluation."
+ },
+ {
+  "id": "12_close",
+  "text": "Vision Zero Agent. Fewer near misses, found before they become accidents. Thank you."
+ }
+]

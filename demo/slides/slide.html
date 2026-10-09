@@ -1,0 +1,76 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><style>
+  html,body{margin:0;width:1280px;height:720px;overflow:hidden;background:#0b0f14;color:#e6edf3;font-family:"DejaVu Sans",Arial,sans-serif}
+  .s{display:none;box-sizing:border-box;width:1280px;height:720px;padding:70px 90px;position:relative}
+  .s.on{display:block}
+  h1{font-size:64px;margin:150px 0 18px;letter-spacing:-1px} h1 b{color:#4cc2ff}
+  h2{font-size:42px;margin:0 0 30px} h2 b{color:#4cc2ff}
+  p.lead{font-size:26px;color:#9fb0c0;line-height:1.45;max-width:1000px}
+  .tag{position:absolute;bottom:50px;left:90px;font-size:18px;color:#6b7c8d}
+  table{border-collapse:collapse;font-size:24px;width:100%}
+  td,th{padding:14px 18px;border-bottom:1px solid #223042;text-align:left} th{color:#9fb0c0;font-weight:normal;font-size:20px}
+  td.n{font-weight:bold;color:#7ee08f;white-space:nowrap} td.w{color:#ffb35c} td.bad{color:#ff6b6b;font-weight:bold}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px}
+  .box{background:#111a24;border:1px solid #223042;border-radius:14px;padding:26px 28px}
+  .box h3{margin:0 0 10px;font-size:28px;color:#4cc2ff} .box p{margin:0;font-size:21px;color:#b6c4d1;line-height:1.45}
+  .note{font-size:19px;color:#6b7c8d;margin-top:22px}
+</style></head><body>
+
+<div class="s" id="01_title">
+  <h1>Vision <b>Zero</b> Agent</h1>
+  <p class="lead">Finds safety incidents in hours of camera footage, and checks them on the video itself.</p>
+  <div class="tag">VAST Builders Challenge · team-4</div>
+</div>
+
+<div class="s" id="02_problem">
+  <h2>Thousands of hours of video. <b>Nobody watches it.</b></h2>
+  <div class="grid">
+    <div class="box"><h3>3,537 clips · 13 cameras</h3><p>Indexed on VAST: Toronto dashcam, a New York cyclist's helmet camera, NYC and San Francisco street cameras, a highway, a neighborhood camera.</p></div>
+    <div class="box"><h3>2 warehouse floors</h3><p>Forklifts, AGVs and humanoid robots sharing space with workers.</p></div>
+    <div class="box"><h3>The question</h3><p>Where did a person come dangerously close to a moving vehicle or machine?</p></div>
+    <div class="box"><h3>The answer</h3><p>A ranked, human-verified incident feed, plain-English alerts and written reports.</p></div>
+  </div>
+</div>
+
+<div class="s" id="09_wandb">
+  <h2>Measured, not guessed: <b>W&amp;B Weave + evaluation</b></h2>
+  <table>
+    <tr><th>Check (human frame review = ground truth)</th><th>Result</th></tr>
+    <tr><td>Street clips: Cosmos risk vs. reviewer</td><td class="n">8 / 10 agree</td></tr>
+    <tr><td>Warehouse clips (after the zero-humans consistency rule)</td><td class="n">6 / 6 agree</td></tr>
+    <tr><td>Archival war film (5 films, 222 clips): explosions</td><td class="n">85% precision · 91% recall</td></tr>
+    <tr><td>Archival war film: bomb release</td><td class="bad">10% precision (12% with stricter prompt)</td></tr>
+  </table>
+  <p class="note">Every Cosmos Reason and LLM call is traced in Weave. Results logged as run "cosmos-reason-frame-checked-eval" in W&amp;B. Reviewed clips are spot checks, not a random sample.</p>
+</div>
+
+<div class="s" id="10_war">
+  <h2>Stress test: <b>public-domain archival war film</b></h2>
+  <div class="grid">
+    <div class="box"><h3>Explosions: reliable</h3><p>85% precision, 91% recall across B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, the 1946 Bikini test and a 1945 bulletin.</p></div>
+    <div class="box"><h3>Bomb release: fooled</h3><p>10% precision. Parachutes, supply bundles and cargo drops are reported as bombs; a stricter prompt only reached 12%.</p></div>
+  </div>
+  <p class="note">Films from Wikimedia Commons, public domain. Sent to Cosmos directly for evaluation; not ingested into the VSS archive.</p>
+</div>
+
+<div class="s" id="11_stack">
+  <h2>Built in one day</h2>
+  <div class="grid">
+    <div class="box"><h3>VAST</h3><p>Video storage, semantic search, Q&amp;A over the archive, streaming.</p></div>
+    <div class="box"><h3>NVIDIA Cosmos on CoreWeave GPUs</h3><p>Cosmos Reason watches every clip and scores the risk.</p></div>
+    <div class="box"><h3>Weights &amp; Biases</h3><p>Serverless inference for reports and watch rules; Weave tracing; evaluation runs.</p></div>
+    <div class="box"><h3>Cursor</h3><p>Built, deployed and tested with Cursor agents and skills.</p></div>
+  </div>
+</div>
+
+<div class="s" id="12_close">
+  <h1>Vision <b>Zero</b> Agent</h1>
+  <p class="lead">Fewer near misses, found before they become accidents.</p>
+  <div class="tag">Thank you · team-4</div>
+</div>
+
+<script>
+  const id = location.search.slice(1) || "01_title";
+  document.getElementById(id).classList.add("on");
+</script>
+</body></html>
