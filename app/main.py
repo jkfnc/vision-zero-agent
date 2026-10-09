@@ -831,7 +831,8 @@ def prescore(queries, per_query, camera=None, domain=None):
 
 
 LIVE_SOURCES = {"disney": "war/src/disney.ogv", "special_delivery": "war/src/special_delivery.webm",
-                "tirpitz": "war/src/tirpitz.ogv"}
+                "tirpitz": "war/src/tirpitz.ogv", "abomb_1957": "war/src/abomb_1957.ogg",
+                "bikini_underwater": "war/src/bikini_underwater.webm", "ivy_mike": "war/src/ivy_mike.ogv"}
 LIVE_DIR = "/tmp/vz_live"
 SEGMENT_S = 5
 live = {"running": False, "stop": False, "film": None, "segments": [], "alerts": [], "error": None,

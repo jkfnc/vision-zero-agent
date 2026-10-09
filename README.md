@@ -28,6 +28,7 @@ Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAS
 | Domain | Measure | Result |
 |---|---|---|
 | Archival film: explosions | 222 hand-checked clips, 56 real explosions (prompt v1) | **51 of 56 found: 91 % recall, 85 % precision** (v2: 88 % precision, 80 % recall) |
+| Live explosion trigger | 3 films not used in tuning (1957 A-bomb newsreel, 1946 Bikini underwater test, 1952 Ivy Mike), 36 segments, human frame check | **3 of 3 blasts alerted, 0 false alarms**; 13 of 21 explosion segments flagged (misses: first flash before the cloud forms, colour fireball close-ups read as a sunset). See [`war-eval/live/live_eval.json`](war-eval/live/live_eval.json) |
 | Street (Vision Zero) | agreement with human review (risk ≥ 2 vs. verdict) | 8 / 10 |
 | Warehouse | agreement with human review | 5 / 6 raw → 6 / 6 after the no-human consistency rule |
 | Archival film: bomb releases (known limit) | 9 real releases (prompt v2) | 12 % precision / 67 % recall — Cosmos confuses parachutes, cargo drops and flak with bombs |
@@ -155,7 +156,7 @@ Seed files `video_scores.json` and `reviews.json` (pre-computed scores and human
 ## Data and licensing
 
 - Street and warehouse clips are the VSS sample archive provided at the event; no internet video was ingested into VSS.
-- War footage: public-domain films from Wikimedia Commons (US Army, USAAF, Universal Newsreels, RAF). Clips were sent only to the Cosmos endpoint for evaluation. The B-17 film carries an AP watermark and the RAF film is colorized, so those two are used for statistics only and not shown. See [`war-eval/attribution.json`](war-eval/attribution.json).
+- War footage: public-domain films from Wikimedia Commons (US Army, USAAF, Universal Newsreels, RAF). Clips were sent only to the Cosmos endpoint for evaluation. The B-17 film carries an AP watermark and the RAF film is colorized, so those two are used for statistics only and not shown. See [`war-eval/attribution.json`](war-eval/attribution.json). Live-trigger test films (public domain: Universal Newsreel, U.S. Military, U.S. Department of Energy): [`war-eval/live/attribution.json`](war-eval/live/attribution.json).
 - Narration voice: Piper `en_US-lessac-medium` (research / non-commercial voice license).
 
 ## Screenshots

@@ -47,10 +47,19 @@
 <div class="s" id="10_war">
   <h2>Archival film: <b>51 of 56 explosions found</b></h2>
   <div class="grid">
-    <div class="box"><h3>Explosions: 91% recall · 85% precision</h3><p>222 hand-checked five-second clips from five public-domain films: B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, the 1946 Bikini test and a 1945 bulletin.</p></div>
+    <div class="box"><h3>Explosions: 91% recall · 85% precision</h3><p>222 hand-checked five-second clips from five public-domain films: B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, USAAF "Special Delivery" (1946) and "Disney Bomb" (1945).</p></div>
     <div class="box"><h3>Known limit: bomb release</h3><p>Parachutes, supply bundles and cargo drops look like bombs at this resolution: 12% precision even with a stricter prompt. We show it, not hide it.</p></div>
   </div>
   <p class="note">Films from Wikimedia Commons, public domain. Sent to Cosmos directly for evaluation; not ingested into the VSS archive.</p>
+</div>
+
+<div class="s" id="10b_live">
+  <h2>Live trigger: <b>every blast alerted, zero false alarms</b></h2>
+  <div class="grid">
+    <div class="box"><h3>How it works</h3><p>Incoming film is cut into 5 s segments as it arrives. Cosmos Reason checks each one; on an explosion the clip is saved, an alert pops up on the page and an email or webhook goes out.</p></div>
+    <div class="box"><h3>Three films it had never seen</h3><p>1957 A-bomb newsreel, 1946 Bikini underwater test, 1952 Ivy Mike. All 3 blasts triggered an alert; 0 false alarms across 36 segments; 13 of 21 explosion segments flagged.</p></div>
+  </div>
+  <p class="note">Misses: the first flash before the cloud forms, and colour fireball close-ups read as a sunset. Truth: human frame check of every segment. Films from Wikimedia Commons, public domain.</p>
 </div>
 
 <div class="s" id="11_stack">

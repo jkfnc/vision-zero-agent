@@ -8,6 +8,10 @@
   "text": "We start with the hardest footage: five public domain archival films. NVIDIA Cosmos Reason, on CoreWeave GPUs, watched every five second clip, and we hand checked two hundred twenty two of them. It found fifty one of fifty six real explosions, at eighty five percent precision. Bomb releases are its known limit: parachutes and cargo drops fool it, and we show that too."
  },
  {
+  "id": "10b_live",
+  "text": "It also works live. As film arrives, the agent cuts it into five second segments and checks each one as it lands. On an explosion it saves the clip, pops an alert on the page and sends an email. On three films it had never seen, every blast raised an alert, with no false alarms in thirty six segments. Its misses are the first flash, before the cloud forms."
+ },
+ {
   "id": "02_problem",
   "text": "The same agent runs on live camera archives. Our archive on VAST holds over three thousand five hundred clips from thirteen cameras: dashcams, a cyclist's helmet camera, street cameras, and two warehouse floors."
  },

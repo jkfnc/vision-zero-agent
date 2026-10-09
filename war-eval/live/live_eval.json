@@ -1,0 +1,41 @@
+{
+ "truth_method": "human check of 1 fps frames per 5 s segment",
+ "films": {
+  "abomb_1957": {
+   "tp": 2,
+   "fp": 0,
+   "fn": 3,
+   "tn": 15,
+   "segments": 20,
+   "first_explosion_s": 30,
+   "first_alert_s": 40,
+   "note": "0:30-0:54 detonation flash, fireball, mushroom cloud; rest is balloon, crew, rocket display"
+  },
+  "bikini_underwater": {
+   "tp": 9,
+   "fp": 0,
+   "fn": 1,
+   "tn": 0,
+   "segments": 10,
+   "first_explosion_s": 0,
+   "first_alert_s": 0,
+   "note": "Baker shot: column at 0:01, then cloud and base surge for the whole film"
+  },
+  "ivy_mike": {
+   "tp": 2,
+   "fp": 0,
+   "fn": 4,
+   "tn": 0,
+   "segments": 6,
+   "first_explosion_s": 0,
+   "first_alert_s": 15,
+   "note": "colour fireball footage for the whole film"
+  }
+ },
+ "total": {
+  "tp": 13,
+  "fp": 0,
+  "fn": 8,
+  "tn": 15
+ }
+}

@@ -28,19 +28,43 @@
 
 <div class="s">
   <h1>Vision <b>Zero</b> Agent</h1>
-  <p class="lead">Finds safety incidents in hours of camera footage, and checks them on the video itself.</p>
+  <p class="lead">One video agent that finds the moments that matter in hours of footage, from archival film to live street and warehouse cameras, and checks every one on the video itself.</p>
   <div class="tag">VAST Builders Challenge · team-4</div>
 </div>
 
 <div class="s">
-  <h2>Thousands of hours of video. <b>Nobody watches it.</b></h2>
+  <h2>Archival film: <b>51 of 56 explosions found</b></h2>
+  <div class="grid">
+    <div class="box"><h3>Explosions: 91% recall · 85% precision</h3><p>222 hand-checked 5 s clips from five films: B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, USAAF "Special Delivery" (1946) and "Disney Bomb" (1945).</p></div>
+    <div class="box"><h3>Known limit: bomb release</h3><p>10% precision. Parachutes and supply drops read as bombs; a stricter prompt only reached 12%. We show it, not hide it.</p></div>
+  </div>
+  <div class="stills"><img src="../shots/war_tirpitz.png"><img src="../shots/war_31.png"></div>
+  <p class="note">Wikimedia Commons, public domain. Sent to Cosmos directly for evaluation; not ingested into the VSS archive.</p>
+  <div class="num">2</div>
+</div>
+
+<div class="s">
+  <h2>Live trigger: <b>every blast alerted, zero false alarms</b></h2>
+  <div class="shot"><img src="../shots/10b_live_app.png" style="width:700px">
+    <div class="side" style="font-size:17px;line-height:1.4"><ul style="margin:0;padding-left:20px">
+      <li>Incoming film is cut into <b>5 s segments</b> as it arrives; Cosmos Reason checks each one.</li>
+      <li>On an explosion: the clip is saved, a <b>toast, chime and desktop notification</b> fire, and an <b>email or webhook</b> goes out.</li>
+      <li>Three films it had never seen (1957 A-bomb newsreel, 1946 Bikini underwater test, 1952 Ivy Mike): <b>3 of 3 blasts alerted</b>, <b>0 false alarms</b> in 36 segments, 13 of 21 explosion segments flagged.</li>
+      <li>Misses: the first flash before the cloud forms; colour fireball close-ups read as a sunset.</li>
+    </ul></div></div>
+  <p class="note">Truth: human frame check of every segment. Wikimedia Commons, public domain; sent to Cosmos only, not ingested into VSS.</p>
+  <div class="num">3</div>
+</div>
+
+<div class="s">
+  <h2>Same agent, <b>live camera archives on VAST</b></h2>
   <div class="grid">
     <div class="box"><h3>3,537 clips · 13 cameras</h3><p>Indexed on VAST: Toronto dashcam, a New York cyclist's helmet camera, NYC and San Francisco street cameras, a highway, a neighborhood camera.</p></div>
     <div class="box"><h3>2 warehouse floors</h3><p>Forklifts, AGVs and humanoid robots sharing space with workers.</p></div>
     <div class="box"><h3>The question</h3><p>Where did a person come dangerously close to a moving vehicle or machine?</p></div>
     <div class="box"><h3>The answer</h3><p>A ranked, human-verified incident feed with bounding boxes, plain-English alerts and written reports.</p></div>
   </div>
-  <div class="num">2</div>
+  <div class="num">4</div>
 </div>
 
 <div class="s">
@@ -55,7 +79,7 @@
     <div class="box"><h3>4 · W&amp;B</h3><p>gpt-oss-120b writes reports and compiles watch rules; Weave traces every call; eval runs measure accuracy.</p></div>
   </div>
   <p class="note" style="margin-top:30px">Web app deployed on the team Kubernetes namespace behind the <code>/app</code> Ingress. Open it from workshop.thecosmoslabs.com → App.</p>
-  <div class="num">3</div>
+  <div class="num">5</div>
 </div>
 
 <div class="s">
@@ -66,7 +90,7 @@
       <li><b>357 clips</b> scored on the video by Cosmos.</li>
       <li><b>29 high-risk events</b>; 10 confirmed and 5 dismissed by a reviewer.</li>
       <li>Report, watch-rule and Q&amp;A panels on the right.</li></ul></div></div>
-  <div class="num">4</div>
+  <div class="num">6</div>
 </div>
 
 <div class="s">
@@ -77,7 +101,7 @@
       <li><b>Red boxes</b>: people in a risky clip, from the VSS YOLO detections, synced to playback.</li>
       <li><b>Reviewer note</b> outranks the model: "beside it as it turns; well under 1 m".</li>
       <li>240 warehouse clips scored; 20 at RISK 3.</li></ul></div></div>
-  <div class="num">5</div>
+  <div class="num">7</div>
 </div>
 
 <div class="s">
@@ -87,7 +111,7 @@
       <li>Cyclist helmet camera, New York.</li>
       <li><b>Red</b> people, <b>amber</b> vehicles; dashed line to the closest vehicle.</li>
       <li>RISK 4 crosswalk conflict, confirmed: rider squeezed against an SUV as pedestrians step into the bike lane.</li></ul></div></div>
-  <div class="num">6</div>
+  <div class="num">8</div>
 </div>
 
 <div class="s">
@@ -97,7 +121,7 @@
       <li>"Alert me when a forklift comes near a worker on the warehouse floor."</li>
       <li>gpt-oss-120b on W&amp;B inference compiles it to a JSON filter: machine = forklift, warehouse cameras.</li>
       <li>Alerts list instantly, confirmed clips first.</li></ul></div></div>
-  <div class="num">7</div>
+  <div class="num">9</div>
 </div>
 
 <div class="s">
@@ -106,7 +130,7 @@
     <div class="side"><ul>
       <li>Executive summary, worst incidents, patterns across cameras, recommended actions with evidence.</li>
       <li>Reviewer notes override the model; unreviewed clips are labeled unverified.</li></ul></div></div>
-  <div class="num">8</div>
+  <div class="num">10</div>
 </div>
 
 <div class="s">
@@ -116,21 +140,11 @@
     <tr><td>Street clips: Cosmos risk vs. reviewer</td><td class="n">8 / 10 agree</td></tr>
     <tr><td>Warehouse clips (after the zero-humans consistency rule)</td><td class="n">6 / 6 agree</td></tr>
     <tr><td>Archival war film (5 films, 222 clips): explosions</td><td class="n">85% precision · 91% recall</td></tr>
+    <tr><td>Live trigger, 3 unseen films (36 segments): explosions</td><td class="n">3 / 3 blasts alerted · 0 false alarms</td></tr>
     <tr><td>Archival war film: bomb release</td><td class="bad">10% precision</td></tr>
   </table>
   <p class="note">Every Cosmos Reason and LLM call is traced in Weave (project jayakumaronline/vision-zero-agent). Results are logged as the W&amp;B run "cosmos-reason-frame-checked-eval". Reviewed street and warehouse clips are spot checks, not a random sample.</p>
-  <div class="num">9</div>
-</div>
-
-<div class="s">
-  <h2>Stress test: <b>public-domain archival war film</b></h2>
-  <div class="grid">
-    <div class="box"><h3>Explosions: reliable</h3><p>85% precision, 91% recall across B-17 raids, the RAF attack on the Tirpitz, RAF night bombing, the 1946 Bikini test and a 1945 bulletin.</p></div>
-    <div class="box"><h3>Bomb release: fooled</h3><p>10% precision. Parachutes and supply drops read as bombs; a stricter prompt only reached 12%.</p></div>
-  </div>
-  <div class="stills"><img src="../shots/war_tirpitz.png"><img src="../shots/war_31.png"></div>
-  <p class="note">Wikimedia Commons, public domain. Sent to Cosmos directly for evaluation; not ingested into the VSS archive.</p>
-  <div class="num">10</div>
+  <div class="num">11</div>
 </div>
 
 <div class="s">
@@ -141,12 +155,12 @@
     <div class="box"><h3>Weights &amp; Biases</h3><p>Serverless inference for reports and watch rules; Weave tracing; evaluation runs.</p></div>
     <div class="box"><h3>Cursor</h3><p>Built, deployed and tested with Cursor agents, subagents and skills.</p></div>
   </div>
-  <div class="num">11</div>
+  <div class="num">12</div>
 </div>
 
 <div class="s">
   <h1>Vision <b>Zero</b> Agent</h1>
-  <p class="lead">Fewer near misses, found before they become accidents.</p>
+  <p class="lead">Any camera, any archive. Every finding checked on the video, and every number measured.</p>
   <div class="tag">Thank you · team-4</div>
 </div>
 </body></html>

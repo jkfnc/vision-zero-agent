@@ -20,6 +20,7 @@ RULE_A, RULE_B = (38, 108, 369, 207), (421, 108, 369, 207)
 SCENES = {
     "01_title": [("01_title.png", 1, [])],
     "10_war": [("10_war.png", 0.18, []), ("WAR", 0.82, [])],
+    "10b_live": [("10b_live.png", 0.35, []), ("10b_live_app.png", 0.65, [])],
     "02_problem": [("02_problem.png", 1, [])],
     "03_overview": [("03_overview.png", 1, [])],
     "04_warehouse": [("04_warehouse_boxes.png", 1, [("wh_forklift_boxes.mp4", *CARD_A), ("wh_police_boxes.mp4", *CARD_B)])],
