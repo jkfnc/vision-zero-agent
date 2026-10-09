@@ -99,6 +99,8 @@ def build_war():
            "prompt_v2": open(os.path.join(W, "wm3/prompt_bomb_v2.txt")).read()}
     json.dump(out, open(os.path.join(d, "index.json"), "w"), indent=1)
     link(os.path.join(DEMO, "clips/war_short.mp4"), os.path.join(d, "war_reel.mp4"))
+    for short, src in (("disney", "wm/disney.ogv"), ("special_delivery", "wm2/sd.webm"), ("tirpitz", "wm3/tirpitz/src.ogv")):
+        link(os.path.join(W, src), os.path.join(d, "src", short + os.path.splitext(src)[1]))
     print(f"war: {len(out['clips'])} clips from {len(SHOWN)} films")
 
 

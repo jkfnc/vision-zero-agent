@@ -127,6 +127,19 @@
     </div>
   </div>
 
+  <div class="panel" id="livepanel"><h2>Live explosion trigger</h2>
+    <div class="filters">
+      <select id="l_film"><option value="disney">Disney Bomb 1945 (77 s)</option><option value="tirpitz">RAF Sinks Tirpitz 1944</option><option value="special_delivery">USAAF Special Delivery 1946</option></select>
+      <select id="l_n"><option value="16">first 80 s (16 segments)</option><option value="24" selected>first 2 min (24 segments)</option><option value="48">first 4 min (48 segments)</option></select>
+      <label class="muted"><input type="checkbox" id="l_rt" checked> real-time pacing</label>
+      <button class="pri" id="l_start">Start live feed</button><button id="l_stop">Stop</button>
+      <span class="muted" id="l_stat"></span>
+    </div>
+    <div class="muted" style="margin:8px 0">The film plays as an incoming stream: every 5 s segment goes to Cosmos Reason as it arrives. On an explosion, the segment is saved and an alert is emailed (or posted to a webhook).</div>
+    <div id="l_strip" style="display:flex;flex-wrap:wrap;gap:4px;margin:8px 0"></div>
+    <div id="l_alerts" class="feed"></div>
+  </div>
+
   <div class="panel">
     <div class="filters">
       <select id="f_film"><option value="">all shown films</option></select>
@@ -268,6 +281,39 @@ async function init() {
   for (const id of ["#f_film","#f_ver","#f_show"]) $(id).onchange = () => { renderMetrics(); renderFeed(); };
   renderMetrics(); renderFeed();
 }
+const SEG_COLORS = {pending:"#e4e1d6", checking:"#c49a2c", clear:"#7c9a6b", explosion:"#c2410c", error:"#6f6d66"};
+let liveTimer = null, alertsShown = -1;
+async function pollLive() {
+  const d = await (await fetch(BASE + "api/war/live")).json();
+  const n = d.segments.length, done = d.segments.filter(s => s.state !== "pending" && s.state !== "checking").length;
+  $("#l_stat").textContent = d.error ? `error: ${d.error}` : d.running ? (n ? `live · segment ${done}/${n} · ${d.alerts.length} alert(s)` : "receiving feed and segmenting…")
+    : (n ? `finished · ${done}/${n} segments · ${d.alerts.length} alert(s)` : "");
+  $("#l_start").disabled = d.running;
+  if (d.film && !liveTimer) $("#l_film").value = d.film;
+  $("#l_strip").innerHTML = d.segments.map(s => `<span title="${esc(s.at + " · " + s.state + (s.why ? " · " + s.why : ""))}"
+    style="width:22px;height:22px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;color:#fff;background:${SEG_COLORS[s.state] || "#ccc"}">${s.i}</span>`).join("");
+  if (d.alerts.length !== alertsShown) {
+    alertsShown = d.alerts.length;
+    $("#l_alerts").innerHTML = d.alerts.map(a => `<div class="card flag">
+      <div class="media"><video controls muted playsinline preload="metadata" src="${BASE}${a.clip}"></video><div class="tag">EXPLOSION · ${esc(a.at)}</div></div>
+      <div class="body"><div class="row"><b>Segment #${a.segment}</b><span class="pill">${esc(a.film)}</span><span class="pill ${/^(email|webhook) sent/.test(a.delivery) ? "ok" : "unk"}">${esc(a.delivery)}</span></div>
+        <div class="why"><b>Cosmos:</b> ${esc(a.why)}</div>
+        <details><summary class="muted">Alert email</summary><div class="live"><b>${esc(a.email_subject)}</b>\n\n${esc(a.email_body)}</div></details></div></div>`).join("");
+  }
+  if (!d.running && liveTimer) { clearInterval(liveTimer); liveTimer = null; }
+}
+$("#l_start").onclick = async () => {
+  alertsShown = -1;
+  const r = await fetch(BASE + "api/war/live/start", {method:"POST", headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({film: $("#l_film").value, max_segments: +$("#l_n").value, realtime: $("#l_rt").checked})});
+  const d = await r.json();
+  if (d.error) { $("#l_stat").textContent = d.error; return; }
+  if (!liveTimer) liveTimer = setInterval(pollLive, 2000);
+  pollLive();
+};
+$("#l_stop").onclick = () => fetch(BASE + "api/war/live/stop", {method:"POST"});
+pollLive().then(() => { if ($("#l_start").disabled && !liveTimer) liveTimer = setInterval(pollLive, 2000); });
+
 init().catch(e => { $("#feed").innerHTML = `<div class="panel">Could not load war data: ${esc(e.message)}</div>`; });
 </script>
 </body>

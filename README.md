@@ -13,6 +13,7 @@ Built at the VAST Builders Challenge (team-4) on the pre-deployed VSS stack: VAS
 | Feature | How |
 |---|---|
 | **Archival film mode** (`/war`) | Five public-domain Wikimedia Commons films (1943–1946), every 5 s clip watched by Cosmos Reason, 222 clips hand-checked. Explosions: 51 of 56 found (91 % recall, 85 % precision). Each clip card shows Cosmos's call, the human check, and a live “Run Cosmos now” button. |
+| **Live explosion trigger** (`/war`) | Treats a film as an incoming feed: ffmpeg cuts it into 5 s segments as it arrives, each segment goes to Cosmos Reason with the bomb/explosion prompt, and on a match the segment is saved and an alert email is sent (SMTP) and/or posted to a webhook. Test run on the Tirpitz film: 10 of 24 segments flagged, each with its clip and alert. API: `POST /api/war/live/start {film, max_segments, realtime}`, `GET /api/war/live`, `POST /api/war/live/stop`. |
 | **Custom-prompt re-index** | We re-indexed street cameras in VSS with our own Cosmos prompt (below) so every caption carries machine-readable `RISK / EVENT / MIN_GAP_M / VULNERABLE / WHY` lines. These become searchable and parseable across ~3,500 clips. |
 | **Video-verified risk scoring** | For clips that matter, the app sends the actual 5 s MP4 to Cosmos Reason with a domain-specific prompt (street or warehouse) and stores the structured score. 346 clips scored this way. |
 | **Warehouse mode** | AGVs, humanoid robots and forklifts vs. workers: `path_conflict`, `human_in_robot_path`, `contact`, `blocked_aisle`. A consistency rule zeroes risk when Cosmos reports no human near a machine. |
@@ -139,7 +140,10 @@ Environment variables (no defaults for endpoints or secrets):
 | `COSMOS3_REASON_URL`, `GPU_BEARER_TOKEN` | Cosmos Reason endpoint |
 | `WANDB_API_KEY`, `WANDB_TEAM`, `WANDB_PROJECT` | W&B Inference |
 | `WEAVE_WANDB_API_KEY`, `WEAVE_PROJECT` | optional: Weave tracing to a different W&B account |
-| `VZ_FILES_URL` | optional: file server for demo assets and war clips |
+| `VZ_FILES_URL` | optional: file server for demo assets and war clips (also the live trigger's source films) |
+| `SMTP_HOST`, `SMTP_PORT` (587), `SMTP_USER`, `SMTP_PASSWORD`, `ALERT_EMAIL_TO`, `ALERT_EMAIL_FROM` | optional: live-trigger alert email (STARTTLS). Without them the alert keeps an email draft |
+| `ALERT_WEBHOOK_URL` | optional: also POST `{"text": ...}` alerts to a Slack-style webhook |
+| `VZ_PUBLIC_URL` | optional: public base URL used for clip links inside alert emails |
 
 ```bash
 cd app && pip install -r requirements.txt && python main.py   # serves on $PORT (default 8080)

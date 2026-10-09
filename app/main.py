@@ -443,10 +443,14 @@ def score_clip(c):
 @traced
 def analyze_war_clip(video):
     """Show a public-domain war clip to Cosmos Reason with the bomb prompt (v2)."""
-    if not GPU_BEARER_TOKEN:
-        raise RuntimeError("GPU_BEARER_TOKEN not configured")
     with urllib.request.urlopen(FILES_URL + "/" + video, timeout=60) as r:
         mp4 = r.read()
+    return {"video": video, **cosmos_bomb(mp4)}
+
+
+def cosmos_bomb(mp4):
+    if not GPU_BEARER_TOKEN:
+        raise RuntimeError("GPU_BEARER_TOKEN not configured")
     body = {"model": cosmos_model(), "max_tokens": 400, "temperature": 0,
             "messages": [{"role": "user", "content": [
                 {"type": "text", "text": BOMB_PROMPT},
@@ -463,7 +467,7 @@ def analyze_war_clip(video):
         if sep and k.strip().isupper():
             fields[k.strip().lower()] = v.strip()
     yes = lambda k: fields.get(k, "").lower().startswith("yes")  # noqa: E731
-    return {"video": video, "raw": text, "fields": fields, "model": cosmos_model(),
+    return {"raw": text, "fields": fields, "model": cosmos_model(),
             "bomb_release": yes("bomb_release") or yes("bomb_falling"), "impact": yes("impact"),
             "latency_s": round(time.time() - t0, 1), "usage": d.get("usage", {})}
 
@@ -604,6 +608,20 @@ class Handler(BaseHTTPRequestHandler):
                 return self._file("war.html", "text/html; charset=utf-8")
             if u.path in ("/files", "/files/", "/files/demo"):
                 return self._redirect({"/files": "files/demo/", "/files/": "demo/", "/files/demo": "demo/"}[u.path])
+            if p == "/api/war/live":
+                return self._json({k: v for k, v in live.items() if k != "stop"})
+            if p == "/api/war/live/clip":
+                name = os.path.join(LIVE_DIR, f"seg_{int(q.get('i', -1)):03d}.mp4")
+                if not os.path.isfile(name):
+                    return self._json({"error": "not found"}, 404)
+                with open(name, "rb") as f:
+                    data = f.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "video/mp4")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+                return
             if p.startswith("/files/"):
                 rel = u.path[len("/files/"):]
                 if ".." in rel.split("/"):
@@ -676,6 +694,20 @@ class Handler(BaseHTTPRequestHandler):
                     body.get("queries") or PRESCORE_QUERIES, int(body.get("per_query") or 12),
                     body.get("camera") or None, body.get("domain") or None), daemon=True).start()
                 return self._json({"started": True})
+            if p == "/api/war/live/start":
+                film = body.get("film")
+                if film not in LIVE_SOURCES:
+                    return self._json({"error": "unknown film"}, 400)
+                if live["running"]:
+                    return self._json({"error": "a live feed is already running"}, 409)
+                live.update(running=True, stop=False, film=film, segments=[], alerts=[], error=None,
+                            started_at=time.time())
+                threading.Thread(target=run_live, args=(film, max(1, min(int(body.get("max_segments") or 24), 60)),
+                                                        bool(body.get("realtime", True))), daemon=True).start()
+                return self._json({"started": True})
+            if p == "/api/war/live/stop":
+                live["stop"] = True
+                return self._json({"stopping": True})
             if p == "/api/war/analyze":
                 video = body.get("video", "")
                 if not WAR_CLIP_RE.match(video):
@@ -796,6 +828,105 @@ def prescore(queries, per_query, camera=None, domain=None):
             t.join()
     finally:
         prescore_state["running"] = False
+
+
+LIVE_SOURCES = {"disney": "war/src/disney.ogv", "special_delivery": "war/src/special_delivery.webm",
+                "tirpitz": "war/src/tirpitz.ogv"}
+LIVE_DIR = "/tmp/vz_live"
+SEGMENT_S = 5
+live = {"running": False, "stop": False, "film": None, "segments": [], "alerts": [], "error": None,
+        "started_at": None, "email": "smtp" if os.environ.get("SMTP_HOST") else None,
+        "webhook": bool(os.environ.get("ALERT_WEBHOOK_URL"))}
+
+
+def ffmpeg_exe():
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        return "ffmpeg"
+
+
+def send_alert(alert):
+    """Email (if SMTP_* is configured) and/or webhook (if ALERT_WEBHOOK_URL is set); otherwise record the draft."""
+    subject = f"[Vision Zero] Explosion detected: {alert['film']} at {alert['at']}"
+    body = (f"Cosmos Reason flagged an explosion in the live feed.\n\nFeed: {alert['film']}\n"
+            f"Segment: #{alert['segment']} ({alert['at']}, {SEGMENT_S} s)\nCosmos: {alert['why']}\n\n"
+            f"Clip: {alert['clip_url']}\n")
+    alert["email_subject"], alert["email_body"] = subject, body
+    status = []
+    if os.environ.get("SMTP_HOST") and os.environ.get("ALERT_EMAIL_TO"):
+        import smtplib
+        from email.message import EmailMessage
+        msg = EmailMessage()
+        msg["Subject"], msg["To"] = subject, os.environ["ALERT_EMAIL_TO"]
+        msg["From"] = os.environ.get("ALERT_EMAIL_FROM") or os.environ.get("SMTP_USER") or "vision-zero@localhost"
+        msg.set_content(body)
+        try:
+            with smtplib.SMTP(os.environ["SMTP_HOST"], int(os.environ.get("SMTP_PORT") or 587), timeout=20) as s:
+                s.starttls()
+                if os.environ.get("SMTP_USER"):
+                    s.login(os.environ["SMTP_USER"], os.environ.get("SMTP_PASSWORD", ""))
+                s.send_message(msg)
+            status.append("email sent")
+        except Exception as e:  # noqa: BLE001
+            status.append(f"email failed: {type(e).__name__}")
+    if os.environ.get("ALERT_WEBHOOK_URL"):
+        try:
+            req = urllib.request.Request(os.environ["ALERT_WEBHOOK_URL"], method="POST",
+                                         data=json.dumps({"text": subject + "\n" + body}).encode(),
+                                         headers={"Content-Type": "application/json"})
+            urllib.request.urlopen(req, timeout=15).close()
+            status.append("webhook sent")
+        except Exception as e:  # noqa: BLE001
+            status.append(f"webhook failed: {type(e).__name__}")
+    alert["delivery"] = ", ".join(status) or "email not sent: SMTP not configured (draft below)"
+
+
+def run_live(film, max_segments, realtime):
+    import shutil
+    import subprocess
+    try:
+        shutil.rmtree(LIVE_DIR, ignore_errors=True)
+        os.makedirs(LIVE_DIR)
+        ext = os.path.splitext(LIVE_SOURCES[film])[1]
+        src = os.path.join(LIVE_DIR, "src" + ext)
+        with urllib.request.urlopen(FILES_URL + "/" + LIVE_SOURCES[film], timeout=120) as r, open(src, "wb") as f:
+            shutil.copyfileobj(r, f)
+        subprocess.run([ffmpeg_exe(), "-v", "error", "-y", "-i", src, "-t", str(max_segments * SEGMENT_S),
+                        "-vf", "scale=-2:360", "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "26",
+                        "-f", "segment", "-segment_time", str(SEGMENT_S), "-reset_timestamps", "1",
+                        "-force_key_frames", f"expr:gte(t,n_forced*{SEGMENT_S})",
+                        os.path.join(LIVE_DIR, "seg_%03d.mp4")], check=True, timeout=600)
+        segs = sorted(p for p in os.listdir(LIVE_DIR) if p.startswith("seg_"))
+        live["segments"] = [{"i": i, "at": f"{i * SEGMENT_S // 60}:{i * SEGMENT_S % 60:02d}", "state": "pending"}
+                            for i in range(len(segs))]
+        for i, name in enumerate(segs):
+            if live["stop"]:
+                break
+            t0 = time.time()
+            seg = live["segments"][i]
+            seg["state"] = "checking"
+            try:
+                with open(os.path.join(LIVE_DIR, name), "rb") as f:
+                    res = cosmos_bomb(f.read())
+                seg.update(state="explosion" if res["impact"] else "clear", why=res["fields"].get("why", ""),
+                           release=res["bomb_release"], latency_s=res["latency_s"])
+                if res["impact"]:
+                    alert = {"film": film, "segment": i, "at": seg["at"], "why": seg["why"], "ts": time.time(),
+                             "clip": f"api/war/live/clip?i={i}",
+                             "clip_url": (os.environ.get("VZ_PUBLIC_URL", "").rstrip("/") + "/" if os.environ.get("VZ_PUBLIC_URL") else "")
+                             + f"api/war/live/clip?i={i}"}
+                    send_alert(alert)
+                    live["alerts"].insert(0, alert)
+            except Exception as e:  # noqa: BLE001
+                seg.update(state="error", why=str(e)[:200])
+            if realtime:
+                time.sleep(max(0, SEGMENT_S - (time.time() - t0)))
+    except Exception as e:  # noqa: BLE001
+        live["error"] = str(e)[:300]
+    finally:
+        live["running"] = False
 
 
 def background_refresh():
